@@ -1,0 +1,5182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speg Studio - The Premier AI Short Video & Auto Clipping Suite</title>
+  <meta name="description" content="Speg Studio is the premier desktop companion for Roblox: high-performance Circle Tracker, Cursor Shaker & Changer, Live Server Manager, Avatar Rotator, Piano Player, and Social Friends Network.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/app_icon.png">
+
+  <style>
+    /* ==========================================================================
+       Midnight OLED Theme Design System (Exact match to Speg Studio Desktop App)
+       ========================================================================== */
+    :root {
+      --bg: #000000;
+      --sidebar: #06070a;
+      --card: #0c0d12;
+      --card-hover: #141620;
+      --border: #1b1e2a;
+      --border-subtle: #12141c;
+      --input: #12141c;
+      --text: #ffffff;
+      --muted: #757c91;
+      --accent: #8b5cf6;
+      --accent-hover: #7c3aed;
+      --accent-soft: #1c1433;
+      --dropdown-hover: #251a4a;
+      --success: #22c55e;
+      --warning: #f5a524;
+      --danger: #ef4444;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    /* Scrollbars matching the desktop UI */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #000000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1b1e2a;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #252a3b;
+    }
+
+    /* Background Interactive Starfield Canvas (identical to theme.py StarfieldVisualizer) */
+    #starfieldCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Main Application Shell */
+    .app-shell {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       Top Navigation Bar
+       ========================================================================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #06070a;
+      border-bottom: 1px solid var(--border);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-version {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-item {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      font-family: var(--font);
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .nav-item:hover {
+      color: #ffffff;
+      background: #141620;
+      border-color: var(--border);
+    }
+    .nav-item.active {
+      color: #ffffff;
+      background: #0c0d12;
+      border-color: var(--border);
+    }
+
+    .nav-admin-btn {
+      color: var(--accent) !important;
+      background: var(--accent-soft) !important;
+      border: 1px solid rgba(139, 92, 246, 0.4) !important;
+      display: none; /* Only revealed dynamically if user has Developer key/tag */
+    }
+    .nav-admin-btn:hover {
+      background: #251a4a !important;
+      border-color: var(--accent) !important;
+    }
+
+    .nav-account-btn {
+      background: #0c0d12;
+      border: 1px solid var(--border);
+      color: #ffffff;
+      padding: 5px 12px 5px 6px;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      margin-left: 6px;
+    }
+    .nav-account-btn:hover {
+      border-color: var(--accent);
+      background: #141620;
+    }
+    .nav-user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-size: 12px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .nav-user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* View Sections */
+    .view-section {
+      display: none;
+      width: 100%;
+      flex: 1;
+    }
+    .view-section.active {
+      display: block;
+    }
+
+    /* ==========================================================================
+       HOME LANDING PAGE
+       ========================================================================== */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 24px 50px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 5px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #d8b4fe;
+      margin-bottom: 24px;
+      letter-spacing: 0.2px;
+    }
+    .hero-badge span.pulse-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--success);
+      border-radius: 50%;
+    }
+
+    .hero h1 {
+      font-size: clamp(34px, 5.5vw, 60px);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -1.5px;
+      color: #ffffff;
+      max-width: 900px;
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      font-size: clamp(15px, 2vw, 18px);
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 680px;
+      margin-bottom: 36px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    /* Studio Showcase Scroll-Scaling Hero Preview */
+    .hero-showcase-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 1080px;
+      margin: 28px auto 60px auto;
+      padding: 0 16px;
+      perspective: 1400px;
+      z-index: 2;
+    }
+
+    .showcase-glow-backdrop {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 88%;
+      height: 78%;
+      background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.3) 0%, rgba(124, 58, 237, 0.12) 42%, rgba(0, 0, 0, 0) 70%);
+      filter: blur(55px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-showcase-frame {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      background: #06070a;
+      border: 1px solid rgba(139, 92, 246, 0.38);
+      box-shadow: 0 25px 60px -15px rgba(139, 92, 246, 0.35), 0 0 45px rgba(124, 58, 237, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      transform-origin: center center;
+      will-change: transform, box-shadow;
+      transition: transform 0.08s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.08s ease-out;
+      z-index: 2;
+    }
+
+    .showcase-glass-reflection {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+      pointer-events: none;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      z-index: 3;
+    }
+
+    .hero-showcase-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 15px;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+    }
+
+    .btn {
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      border: 1px solid transparent;
+      user-select: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+    .btn-secondary {
+      background: var(--card);
+      border-color: var(--border);
+      color: #ffffff;
+    }
+    .btn-secondary:hover {
+      background: var(--card-hover);
+      border-color: var(--muted);
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 5px;
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+    .btn-danger:hover {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .hero-meta div {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Feature Grid Section */
+    .section-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    .section-hdr {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .section-hdr h2 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+    .section-hdr p {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .feature-card:hover {
+      background: var(--card-hover);
+      border-color: var(--border-subtle);
+    }
+    .feature-icon-wrap {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-soft);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+    .feature-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.55;
+      flex: 1;
+      margin-bottom: 16px;
+    }
+    .feature-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .tag-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: #c4b5fd;
+      background: var(--input);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: var(--mono);
+    }
+
+    .banner-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 32px;
+      margin-top: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .banner-text h3 {
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .banner-text p {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 500px;
+    }
+
+    /* ==========================================================================
+       ACCOUNT PAGE
+       ========================================================================== */
+    .account-container {
+      max-width: 980px;
+      margin: 40px auto 80px;
+      padding: 0 20px;
+    }
+
+    .account-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 32px;
+    }
+
+    .account-tabs {
+      display: flex;
+      gap: 6px;
+      background: #06070a;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .account-tab-btn {
+      flex: 1;
+      padding: 9px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .account-tab-btn.active {
+      color: #ffffff;
+      background: var(--card);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-input, .form-select {
+      width: 100%;
+      background: var(--input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13.5px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+    .form-input:focus, .form-select:focus {
+      border-color: var(--accent);
+    }
+
+    .profile-hero {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .profile-avatar-big {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      overflow: hidden;
+    }
+    .profile-avatar-big img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-meta h3 {
+      font-size: 19px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .profile-meta p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .badge-dev {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: #d8b4fe;
+    }
+    .badge-active {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #4ade80;
+    }
+    .badge-expired {
+      background: rgba(245, 165, 36, 0.12);
+      border: 1px solid rgba(245, 165, 36, 0.3);
+      color: #fcd34d;
+    }
+    .badge-banned {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+
+    .key-info-box {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    .key-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 13px;
+    }
+    .key-info-row:last-child {
+      border-bottom: none;
+    }
+    .key-info-row span:first-child {
+      color: var(--muted);
+    }
+    .key-info-row span:last-child {
+      font-weight: 600;
+      font-family: var(--mono);
+    }
+
+    /* ==========================================================================
+       Social Hub, Friends & Direct Messages (DMs)
+       ========================================================================== */
+    .tab-badge {
+      background: var(--danger);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      margin-left: 6px;
+      line-height: 1;
+      display: inline-block;
+    }
+
+    .social-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .social-hdr-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #ffffff;
+    }
+    .social-hdr-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .add-friend-bar {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .add-friend-bar input {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .reqs-box {
+      background: rgba(139, 92, 246, 0.07);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+    .reqs-box-hdr {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #c4b5fd;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .req-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .req-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #0c0d12;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .req-user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .req-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .social-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+      min-height: 520px;
+    }
+    @media (max-width: 860px) {
+      .social-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .social-subtabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 8px;
+      gap: 6px;
+    }
+    .social-subtab-btn {
+      flex: 1;
+      padding: 7px 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .social-subtab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .social-subtab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .friends-list-panel {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .friends-list-hdr {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .friends-list-search {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .friends-scroll {
+      flex: 1;
+      max-height: 440px;
+      overflow-y: auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .friend-card {
+      background: var(--card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .friend-card:hover {
+      background: var(--card-hover);
+      border-color: var(--border);
+    }
+    .friend-card.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .friend-row-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .friend-avatar-wrap {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+    }
+    .friend-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--input);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      overflow: hidden;
+      color: #fff;
+    }
+    .friend-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .status-dot {
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 2px solid #000;
+    }
+    .status-dot.online {
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+    }
+    .status-dot.in-game {
+      background: #06b6d4;
+      box-shadow: 0 0 7px rgba(6, 182, 212, 0.8);
+      animation: statusPulse 2s infinite;
+    }
+    .status-dot.offline {
+      background: #64748b;
+    }
+    @keyframes statusPulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .friend-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .friend-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .friend-status-text {
+      font-size: 11.5px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+    .friend-status-text.in-game {
+      color: #67e8f9;
+      font-weight: 600;
+    }
+    .friend-status-text.online {
+      color: #86efac;
+    }
+    .friend-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+    .btn-join-server {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #fff;
+      border: none;
+      font-weight: 700;
+      font-size: 11.5px;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    }
+    .btn-join-server:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.12);
+    }
+
+    .badge-msg {
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: var(--radius-pill);
+    }
+
+    .chat-panel {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 480px;
+    }
+    .chat-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .chat-header-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-messages {
+      flex: 1;
+      height: 380px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-msg {
+      max-width: 78%;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-msg.mine {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+    .chat-msg.theirs {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+    .msg-bubble {
+      padding: 9px 13px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .chat-msg.mine .msg-bubble {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      color: #ffffff;
+      border-bottom-right-radius: 3px;
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+    }
+    .chat-msg.theirs .msg-bubble {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: #ffffff;
+      border-bottom-left-radius: 3px;
+    }
+    .msg-time {
+      font-size: 10.5px;
+      color: var(--muted);
+      margin-top: 3px;
+      padding: 0 4px;
+    }
+    .chat-input-bar {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--sidebar);
+      display: flex;
+      gap: 8px;
+    }
+    .chat-empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--muted);
+    }
+    .chat-empty-icon {
+      font-size: 44px;
+      margin-bottom: 14px;
+      opacity: 0.8;
+    }
+
+    .speg-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f111a;
+      border: 1px solid var(--accent);
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+      z-index: 99999;
+      font-size: 13.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastSlideIn 0.25s ease forwards;
+    }
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       ADMIN DASHBOARD
+       ========================================================================== */
+    .admin-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    .admin-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+    }
+    .metric-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .metric-val {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: var(--mono);
+    }
+
+    .admin-nav-bar {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+      margin-bottom: 24px;
+    }
+    .admin-tab-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .admin-tab-btn:hover {
+      color: #fff;
+      background: var(--card-hover);
+    }
+    .admin-tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    th {
+      background: #06070a;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+    }
+    tr:hover td {
+      background: rgba(20, 22, 32, 0.4);
+    }
+    td.mono {
+      font-family: var(--mono);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      width: 100%;
+      max-width: 520px;
+      padding: 28px;
+    }
+
+    /* ==========================================================================
+       Mobile Hamburger Menu
+       ========================================================================== */
+    .nav-hamburger-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      background: #0c0d12;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      padding: 0;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      z-index: 120;
+    }
+    .nav-hamburger-btn:hover {
+      background: #141620;
+      border-color: var(--accent);
+    }
+    .hamburger-line {
+      width: 20px;
+      height: 2px;
+      background: #ffffff;
+      border-radius: 2px;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+      transform-origin: center;
+      pointer-events: none;
+    }
+    .nav-hamburger-btn.open .line1 {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .nav-hamburger-btn.open .line2 {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+    .nav-hamburger-btn.open .line3 {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .mobile-menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 9998;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .mobile-menu-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mobile-menu-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 320px;
+      max-width: 85vw;
+      background: #06070a;
+      border-left: 1px solid var(--border);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: -20px 0 45px rgba(0, 0, 0, 0.85);
+    }
+    .mobile-menu-drawer.open {
+      transform: translateX(0) !important;
+    }
+    .mobile-menu-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .mobile-menu-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mobile-menu-close {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      transition: color 0.15s ease;
+    }
+    .mobile-menu-close:hover {
+      color: #ffffff;
+    }
+    .mobile-menu-links {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 18px 14px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .mobile-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 14px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--muted);
+      font-family: var(--font);
+      font-size: 14.5px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .mobile-nav-item:hover, .mobile-nav-item.active {
+      color: #ffffff;
+      background: #141620;
+      border-color: var(--border);
+    }
+    .mobile-nav-item .nav-icon {
+      font-size: 16px;
+      width: 22px;
+      text-align: center;
+    }
+    .mobile-menu-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.015);
+    }
+    .mobile-account-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #0c0d12;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: #ffffff;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+    .mobile-account-btn:hover {
+      border-color: var(--accent);
+      background: #141620;
+    }
+    .mobile-account-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .mobile-account-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .mobile-account-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 860px) {
+      .nav-links {
+        display: none !important;
+      }
+      .nav-hamburger-btn {
+        display: flex !important;
+      }
+    }
+
+    /* ==========================================================================
+       Pricing Showcase Section & Cards
+       ========================================================================== */
+    .pricing-section {
+      padding-top: 50px;
+      padding-bottom: 20px;
+    }
+    .pricing-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      padding: 4px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 36px;
+      align-items: stretch;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (max-width: 1080px) {
+      .pricing-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 760px;
+      }
+    }
+    @media (max-width: 640px) {
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 440px;
+      }
+    }
+
+    .pricing-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pricing-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(139, 92, 246, 0.5);
+      background: var(--card-hover);
+      box-shadow: 0 12px 30px -10px rgba(139, 92, 246, 0.25);
+    }
+    .pricing-card.selected {
+      border-color: var(--accent);
+      background: linear-gradient(180deg, #17112b 0%, #0c0d12 100%);
+      box-shadow: 0 0 0 2px var(--accent), 0 14px 35px -8px rgba(139, 92, 246, 0.45);
+      transform: translateY(-4px);
+    }
+
+    .tier-badge-popular {
+      position: absolute;
+      top: -11px;
+      right: 14px;
+      background: #3b82f6;
+      color: #ffffff;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.45);
+    }
+    .tier-badge-lifetime {
+      position: absolute;
+      top: -11px;
+      right: 14px;
+      background: linear-gradient(135deg, #8b5cf6, #d946ef);
+      color: #ffffff;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 11px;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      box-shadow: 0 2px 12px rgba(139, 92, 246, 0.6);
+    }
+
+    .pricing-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .tier-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .tier-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .tier-price-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+      margin-bottom: 10px;
+    }
+    .tier-price-wrap .currency {
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .tier-price-wrap .price {
+      font-size: 32px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -1px;
+    }
+    .tier-price-wrap .period {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-left: 2px;
+    }
+    .tier-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-bottom: 16px;
+      min-height: 35px;
+    }
+    .tier-perks {
+      list-style: none;
+      margin-bottom: 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .tier-perks li {
+      font-size: 11.5px;
+      color: #d1d5db;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.4;
+    }
+    .tier-perks .check {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .pricing-select-btn {
+      width: 100%;
+      padding: 9px;
+      font-size: 12.5px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: #141620;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+      margin-top: auto;
+    }
+    .pricing-card:hover .pricing-select-btn {
+      background: #1f2333;
+      border-color: var(--accent);
+    }
+    .pricing-card.selected .pricing-select-btn {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 2px 10px rgba(139, 92, 246, 0.4);
+    }
+
+    .pricing-cta-bar {
+      margin-top: 32px;
+      background: #0c0d12;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .pricing-cta-summary {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      gap: 3px;
+    }
+    .cta-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .cta-tier {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .btn-purchase-cta {
+      font-size: 15px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.45);
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-purchase-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(139, 92, 246, 0.65);
+    }
+
+    /* ==========================================================================
+       Multi-Step Purchase Modal Styles
+       ========================================================================== */
+    .purchase-modal-box {
+      max-width: 540px;
+      width: 100%;
+      background: #0c0d12;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 26px;
+      box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.95), 0 0 40px rgba(139, 92, 246, 0.15);
+      animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalPop {
+      0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .stepper-flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stepper-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      transition: color 0.2s ease;
+    }
+    .stepper-step.active {
+      color: #ffffff;
+    }
+    .stepper-step.completed {
+      color: var(--success);
+    }
+    .step-bubble {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #1b1e2a;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .stepper-step.active .step-bubble {
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+    .stepper-step.completed .step-bubble {
+      background: var(--success);
+      color: #ffffff;
+    }
+    .stepper-separator {
+      color: var(--border);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .step-indicator-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .selected-tier-pill {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .selected-tier-pill .pill-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .selected-tier-pill .pill-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .payment-methods-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0 16px;
+    }
+    @media (max-width: 480px) {
+      .payment-methods-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .payment-method-card {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .payment-method-card:hover {
+      border-color: rgba(139, 92, 246, 0.5);
+      background: #141620;
+    }
+    .payment-method-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .pay-radio {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .payment-method-card.selected .pay-radio {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+    .payment-method-card.selected .pay-radio::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+    .pay-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .pay-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .pay-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .payment-notice-banner {
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #c4b5fd;
+      margin: 14px 0 18px;
+      line-height: 1.45;
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+    }
+
+    .order-summary-box {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin: 14px 0 18px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+    }
+    .summary-row span:last-child {
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .summary-row.total-row {
+      border-bottom: none;
+      padding-top: 10px;
+      margin-top: 4px;
+      border-top: 1px solid var(--border);
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .summary-row.total-row span:last-child {
+      color: var(--accent);
+      font-size: 16px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: #06070a;
+      padding: 32px 24px;
+      margin-top: auto;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Starfield Canvas: Interactive 3-link constellation matching desktop app theme.py -->
+  <canvas id="starfieldCanvas"></canvas>
+
+  <div class="app-shell">
+
+    <!-- Top Navigation Bar -->
+    <header class="topbar">
+      <a class="brand-wrap" onclick="showSection('home')">
+        <img src="assets/app_icon.png" alt="Speg Studio Logo" class="brand-icon">
+        <span class="brand-title">Speg Studio <span class="brand-version">v1.0.5</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <button class="nav-item active" id="nav-btn-home" onclick="showSection('home')">
+          Home
+        </button>
+        <button class="nav-item" id="nav-btn-pricing" onclick="scrollToPricing()">
+          Pricing
+        </button>
+        <button class="nav-item" id="nav-btn-features" onclick="scrollToFeatures()">
+          Features
+        </button>
+        <a class="nav-item" href="SpegStudio.exe" target="_blank">
+          Download
+        </a>
+        <button class="nav-item nav-admin-btn" id="nav-btn-admin" onclick="showSection('admin')">
+          Admin Dashboard
+        </button>
+        <button class="nav-account-btn" id="nav-btn-account" onclick="showSection('account')">
+          <div class="nav-user-avatar" id="topAvatar">👤</div>
+          <span id="topUsername">Sign In</span>
+        </button>
+      </nav>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="nav-hamburger-btn" id="navHamburgerBtn" aria-label="Toggle navigation menu" onclick="toggleMobileMenu()">
+        <span class="hamburger-line line1"></span>
+        <span class="hamburger-line line2"></span>
+        <span class="hamburger-line line3"></span>
+      </button>
+    </header>
+
+    <!-- VIEW 1: HOME LANDING PAGE -->
+    <main id="view-home" class="view-section active">
+      <div class="hero">
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          <span>Speg Studio 1.0.5 Available for Windows</span>
+        </div>
+
+        <h1>
+          The All-In-One <br>
+          AI Short Video & Content Generation Studio
+        </h1>
+
+        <p>
+          High-performance desktop video creation powerhouse for YouTube Shorts, TikTok, and Reels. Packed with dual character dialogue, smart clipping from YouTube/Twitch, lip-synced PNGTubers, animated dynamic subtitles, and vertical 9:16 background gameplay.
+        </p>
+
+        <div class="hero-actions">
+          <a href="SpegStudio.exe" class="btn btn-primary" target="_blank">
+            <span>Download SpegStudio.exe</span>
+          </a>
+          <button class="btn btn-secondary" onclick="showSection('account')">
+            <span>Redeem License / Account</span>
+          </button>
+        </div>
+
+        <!-- App Desktop Preview Showcase with Interactive Scroll-Scaling Effect -->
+        <div class="hero-showcase-container" id="heroShowcase">
+          <div class="showcase-glow-backdrop"></div>
+          <div class="hero-showcase-frame" id="showcaseFrame">
+            <div class="showcase-glass-reflection"></div>
+            <img src="assets/app_preview.png" alt="Speg Studio v1.0.5 Desktop Interface Preview" class="hero-showcase-img" id="showcaseImg">
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing Showcase Section -->
+      <section class="section-wrap pricing-section" id="pricingSection">
+        <div class="section-hdr">
+          <h2>Pricing</h2>
+          <p>Instant key delivery upon checkout. Unlocks every module, presets, and zero-latency scripts.</p>
+        </div>
+
+        <!-- Pricing Cards Grid -->
+        <div class="pricing-grid">
+          <!-- Tier 1: 7 Days (Specified by user) -->
+          <div class="pricing-card" data-tier="7 Days" data-price="5.99" data-duration="7 Days Access" onclick="selectPricingTier(this)">
+            <div class="pricing-card-header">
+              <span class="tier-name">7 Days</span>
+              <span class="tier-tag">Weekly</span>
+            </div>
+            <div class="tier-price-wrap">
+              <span class="currency">$</span>
+              <span class="price">5.99</span>
+              <span class="period">/ week</span>
+            </div>
+            <p class="tier-desc">Ideal for competitive gaming weeks, rank climbs, and events.</p>
+            <ul class="tier-perks">
+              <li><span class="check">✓</span> All 8+ Roblox Tool Modules</li>
+              <li><span class="check">✓</span> Circle Tracker & Custom FOV</li>
+              <li><span class="check">✓</span> Cursor Changer & Macro Engine</li>
+              <li><span class="check">✓</span> Live Server Manager & Presets</li>
+            </ul>
+            <button class="pricing-select-btn" type="button">Select Tier</button>
+          </div>
+
+          <!-- Tier 2: 30 Days (Monthly) -->
+          <div class="pricing-card popular" data-tier="30 Days" data-price="14.99" data-duration="30 Days Access" onclick="selectPricingTier(this)">
+            <div class="tier-badge-popular">Most Popular</div>
+            <div class="pricing-card-header">
+              <span class="tier-name">30 Days</span>
+              <span class="tier-tag">Monthly</span>
+            </div>
+            <div class="tier-price-wrap">
+              <span class="currency">$</span>
+              <span class="price">14.99</span>
+              <span class="period">/ month</span>
+            </div>
+            <p class="tier-desc">Save ~37% compared to weekly. The preferred choice for active daily players.</p>
+            <ul class="tier-perks">
+              <li><span class="check">✓</span> Everything in Weekly Pass</li>
+              <li><span class="check">✓</span> Save 37% vs Weekly Pricing</li>
+              <li><span class="check">✓</span> Custom Macro Profiles & Presets</li>
+              <li><span class="check">✓</span> Priority Support & Presets</li>
+            </ul>
+            <button class="pricing-select-btn" type="button">Select Tier</button>
+          </div>
+
+          <!-- Tier 3: 90 Days (Quarterly) -->
+          <div class="pricing-card" data-tier="90 Days" data-price="27.99" data-duration="90 Days Access" onclick="selectPricingTier(this)">
+            <div class="pricing-card-header">
+              <span class="tier-name">90 Days</span>
+              <span class="tier-tag">Quarterly</span>
+            </div>
+            <div class="tier-price-wrap">
+              <span class="currency">$</span>
+              <span class="price">27.99</span>
+              <span class="period">/ 3 months</span>
+            </div>
+            <p class="tier-desc">Extended 3-month power gaming pass at under $0.31/day.</p>
+            <ul class="tier-perks">
+              <li><span class="check">✓</span> Everything in Monthly Pass</li>
+              <li><span class="check">✓</span> Save Over 50% vs Weekly</li>
+              <li><span class="check">✓</span> Beta Access to New YOLO Models</li>
+              <li><span class="check">✓</span> Unlimited Custom Presets</li>
+            </ul>
+            <button class="pricing-select-btn" type="button">Select Tier</button>
+          </div>
+
+          <!-- Tier 4: Lifetime (Specified by user) -->
+          <div class="pricing-card selected" data-tier="Lifetime" data-price="40.00" data-duration="Permanent Access (Never expires)" onclick="selectPricingTier(this)">
+            <div class="tier-badge-lifetime">Best Value</div>
+            <div class="pricing-card-header">
+              <span class="tier-name">Lifetime</span>
+              <span class="tier-tag">Permanent</span>
+            </div>
+            <div class="tier-price-wrap">
+              <span class="currency">$</span>
+              <span class="price">40</span>
+              <span class="period">one-time</span>
+            </div>
+            <p class="tier-desc">Pay once, own forever. Never worry about subscriptions or renewals.</p>
+            <ul class="tier-perks">
+              <li><span class="check">✓</span> <strong>Permanent Access</strong> — Never Expires</li>
+              <li><span class="check">✓</span> All Future Updates Included</li>
+              <li><span class="check">✓</span> Exclusive Lifetime Discord Role & Tag</li>
+              <li><span class="check">✓</span> All Present & Future Tool Modules</li>
+            </ul>
+            <button class="pricing-select-btn" type="button">Selected ✓</button>
+          </div>
+        </div>
+
+        <!-- Single Primary Purchase Bar / Action -->
+        <div class="pricing-cta-bar">
+          <div class="pricing-cta-summary">
+            <span class="cta-label">Selected License:</span>
+            <span class="cta-tier" id="selectedTierLabel">Lifetime — $40.00 (Permanent Access)</span>
+          </div>
+          <button class="btn btn-primary btn-purchase-cta" id="btnOpenPurchaseFlow" onclick="openPurchaseModal()">
+            <span id="purchaseBtnText">Continue to Purchase — $40.00</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Features Showcase Section -->
+      <section class="section-wrap" id="featuresSection">
+        <div class="section-hdr">
+          <h2>Engineered for Viral Growth</h2>
+          <p>Every tool is designed to produce high-retention vertical short videos with zero hassle.</p>
+        </div>
+
+        <div class="features-grid">
+          <!-- Smart Clipping -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">✂️</div>
+            <h3>Smart Stream & Video Clipping</h3>
+            <p>Grab viral moments directly from YouTube, Twitch, or Kick URLs. Automatically clips segments, reframes to 9:16 vertical shorts, and syncs subtitles.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">Twitch / Kick / YT</span>
+              <span class="tag-badge">Auto 9:16</span>
+              <span class="tag-badge">Fast Fetch</span>
+            </div>
+          </div>
+
+          <!-- Dual PNGTuber Dialogue -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🎭</div>
+            <h3>Dual PNGTuber Lip Sync</h3>
+            <p>Dynamic 2-character debate and podcast dialogue with 13 emotional poses, automated background removal (rembg/ComfyUI), and voice-reactive mouth animation.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">13 Expressive Poses</span>
+              <span class="tag-badge">Lip Sync</span>
+              <span class="tag-badge">AI Generation</span>
+            </div>
+          </div>
+
+          <!-- Kinetic Subtitles -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">💬</div>
+            <h3>Animated Kinetic Subtitles</h3>
+            <p>Word-by-word highlighted captions with punchy bounce animations, custom color palettes, background glow, and Whisper speech-to-text accuracy.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">Whisper STT</span>
+              <span class="tag-badge">Word Animation</span>
+              <span class="tag-badge">Multi-Line</span>
+            </div>
+          </div>
+
+          <!-- AI Scriptwriting -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🧠</div>
+            <h3>AI Script Generation</h3>
+            <p>Autonomous script creation for Reddit stories, AI debate topics, or custom prompts using local Ollama (Llama 3/Mistral), Claude 3.5 Sonnet, or GPT-4o.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">Local Ollama</span>
+              <span class="tag-badge">Claude 3.5</span>
+              <span class="tag-badge">Reddit Scraper</span>
+            </div>
+          </div>
+
+          <!-- B-Roll & Visual Overlays -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🖼️</div>
+            <h3>Intelligent B-Roll System</h3>
+            <p>Targeted visual image overlays placed strategically throughout the video, generated locally via ComfyUI SDXL or pulled from curated image sequences.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">ComfyUI Local</span>
+              <span class="tag-badge">Target Slider</span>
+              <span class="tag-badge">Timed Insert</span>
+            </div>
+          </div>
+
+          <!-- Multi-Platform Auto Publish -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🚀</div>
+            <h3>Automated Social Publishing</h3>
+            <p>Queue and upload completed videos directly to YouTube Shorts, TikTok, and Instagram Reels with custom hashtags, descriptions, and schedule intervals.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">YouTube Shorts</span>
+              <span class="tag-badge">TikTok API</span>
+              <span class="tag-badge">Auto Queue</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- VIEW 2: ACCOUNT PAGE -->
+    <main id="view-account" class="view-section">
+      <div class="account-container">
+        
+        <!-- Logged Out Auth Tabs (Sign In / Register) -->
+        <div class="account-tabs" id="authTabsContainer">
+          <button class="account-tab-btn active" id="tabBtnLogin" onclick="setAuthTab('login')">Sign In</button>
+          <button class="account-tab-btn" id="tabBtnRegister" onclick="setAuthTab('register')">Register New Account</button>
+        </div>
+
+        <!-- Logged In User Tabs: Tab 1 Friends & Social, Tab 2 Profile & License -->
+        <div class="account-tabs" id="userTabsContainer" style="display:none;">
+          <button class="account-tab-btn active" id="tabBtnSocial" onclick="setUserTab('social')">
+            <span>💬 Friends & Social</span>
+            <span class="tab-badge" id="socialTabBadge" style="display:none;">0</span>
+          </button>
+          <button class="account-tab-btn" id="tabBtnProfile" onclick="setUserTab('profile')">
+            <span>👤 Profile & License</span>
+          </button>
+        </div>
+
+        <div class="account-card" id="accountMainCard">
+
+          <!-- Sign In Form (Logged Out) -->
+          <div id="authPanelLogin">
+            <h2 style="font-size:20px; font-weight:700; margin-bottom:6px;">Sign In to Speg Studio</h2>
+            <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px;">Enter your credentials to access your profile, social features, and license status.</p>
+
+            <form onsubmit="handleLogin(event)">
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="loginEmail" class="form-input" placeholder="user@example.com" required>
+              </div>
+              <div class="form-group">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <label style="margin-bottom:0;">Password</label>
+                  <a href="javascript:void(0)" onclick="handleForgotPasswordWeb()" style="color:var(--accent); font-size:12px; text-decoration:none;">Forgot password?</a>
+                </div>
+                <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;" id="loginSubmitBtn">
+                Sign In
+              </button>
+            </form>
+          </div>
+
+          <!-- Register Form (Logged Out) -->
+          <div id="authPanelRegister" style="display:none;">
+            <h2 style="font-size:20px; font-weight:700; margin-bottom:6px;">Create an Account</h2>
+            <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px;">Create your account to save settings and bind license keys.</p>
+
+            <form onsubmit="handleRegister(event)">
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="regUsername" class="form-input" placeholder="Desired username" required>
+              </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="regEmail" class="form-input" placeholder="user@example.com" required>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="regPassword" class="form-input" placeholder="At least 6 characters" minlength="6" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;" id="regSubmitBtn">
+                Register Account
+              </button>
+            </form>
+          </div>
+
+          <!-- LOGGED-IN TAB 1: FRIENDS, REQUESTS & DMS -->
+          <div id="userPanelSocial" style="display:none;">
+            
+            <div class="social-hdr">
+              <div>
+                <h2 class="social-hdr-title">💬 Friends, Requests & Messages</h2>
+                <p class="social-hdr-sub">See who is online, join friends in-game, manage requests, and chat in real-time.</p>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-secondary btn-sm" onclick="loadSocialData(true)">🔄 Refresh</button>
+              </div>
+            </div>
+
+            <!-- Quick Add Friend Bar -->
+            <form class="add-friend-bar" onsubmit="handleAddFriend(event)">
+              <span style="font-size:13px; font-weight:600; color:#cbd5e1;">Add Friend:</span>
+              <input type="text" id="addFriendInput" class="form-input" placeholder="Enter friend's exact username..." required style="height:38px;">
+              <button type="submit" class="btn btn-primary btn-sm" id="btnAddFriendSubmit" style="height:38px;">+ Send Request</button>
+            </form>
+
+            <!-- Pending Incoming Friend Requests -->
+            <div id="socialReqsWrapper" style="display:none;">
+              <div class="reqs-box">
+                <div class="reqs-box-hdr">
+                  <span>📬 Pending Incoming Friend Requests</span>
+                  <span class="badge badge-dev" id="reqsCountBadge">0</span>
+                </div>
+                <div class="req-list" id="socialReqsList">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Social 2-Column Layout: Left Friends List, Right Direct Messages Chat -->
+            <div class="social-layout">
+              <!-- Left: Friends List & Social Subtabs -->
+              <div class="friends-list-panel">
+                <div class="social-subtabs">
+                  <button class="social-subtab-btn active" id="subtabBtnFriends" onclick="setSocialSubtab('friends')">
+                    Friends (<span id="subtabCountFriends">0</span>)
+                  </button>
+                  <button class="social-subtab-btn" id="subtabBtnRequests" onclick="setSocialSubtab('requests')">
+                    Requests (<span id="subtabCountRequests">0</span>)
+                  </button>
+                  <button class="social-subtab-btn" id="subtabBtnPending" onclick="setSocialSubtab('pending')">
+                    Pending (<span id="subtabCountPending">0</span>)
+                  </button>
+                </div>
+                <div class="friends-list-hdr" id="friendsPresenceHdr">
+                  <span>Friends (<span id="friendsCountOnline">0</span> online / <span id="friendsCountTotal">0</span>)</span>
+                  <span style="font-size:11px; color:var(--muted);">Live Presence</span>
+                </div>
+                <div class="friends-list-search" id="friendSearchContainer">
+                  <input type="text" id="friendSearchInput" class="form-input" placeholder="Search friends..." style="height:32px; font-size:12px;" oninput="renderFriendsList()">
+                </div>
+                <div class="friends-scroll" id="friendsListContainer">
+                  <div style="text-align:center; padding:30px 14px; color:var(--muted); font-size:13px;">
+                    Loading friends...
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Direct Message Chat Window -->
+              <div class="chat-panel" id="chatPanelContainer">
+                <div id="chatEmptyState" class="chat-empty-state">
+                  <div class="chat-empty-icon">💬</div>
+                  <h3 style="font-size:16px; font-weight:700; color:#fff; margin-bottom:6px;">Direct Messaging</h3>
+                  <p style="font-size:13px; max-width:320px;">Select a friend from the left to start a conversation, see their status, or join their Roblox server.</p>
+                </div>
+
+                <div id="chatActiveState" style="display:none; flex-direction:column; height:100%; flex:1;">
+                  <!-- Header with Friend Info & Join Server button -->
+                  <div class="chat-header">
+                    <div class="chat-header-user">
+                      <div class="friend-avatar-wrap">
+                        <div class="friend-avatar" id="activeChatAvatar">👤</div>
+                        <div class="status-dot" id="activeChatStatusDot"></div>
+                      </div>
+                      <div>
+                        <div style="font-size:14px; font-weight:700; color:#fff; display:flex; align-items:center; gap:6px;">
+                          <span id="activeChatUsername">Username</span>
+                          <span id="activeChatTag"></span>
+                        </div>
+                        <div id="activeChatStatusText" style="font-size:11.5px; color:var(--muted);">Offline</div>
+                      </div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px;" id="activeChatActions">
+                      <!-- Rendered dynamically (Join Server button, Copy Link, Refresh) -->
+                    </div>
+                  </div>
+
+                  <!-- Chat Messages Thread -->
+                  <div class="chat-messages" id="chatMessagesThread">
+                    <!-- Rendered dynamically -->
+                  </div>
+
+                  <!-- Chat Input Bar -->
+                  <form class="chat-input-bar" onsubmit="handleSendChatMessage(event)">
+                    <input type="text" id="chatMessageInput" class="form-input" placeholder="Type a message... (Press Enter to send)" autocomplete="off" required style="height:40px;">
+                    <button type="submit" class="btn btn-primary btn-sm" id="btnSendChatMessage" style="height:40px; padding:0 18px;">
+                      Send
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- LOGGED-IN TAB 2: PROFILE & LICENSE KEY -->
+          <div id="userPanelProfile" style="display:none;">
+            <div class="profile-hero">
+              <div class="profile-avatar-big" id="profileBigAvatar">👤</div>
+              <div class="profile-meta">
+                <h3 id="profileUsername">Username</h3>
+                <p id="profileEmail">user@example.com</p>
+                <div style="margin-top:6px;" id="profileTagWrap"></div>
+              </div>
+              <div style="margin-left:auto;">
+                <button class="btn btn-secondary btn-sm" onclick="handleLogout()">Sign Out</button>
+              </div>
+            </div>
+
+            <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Active License Key</h3>
+            <div class="key-info-box">
+              <div class="key-info-row">
+                <span>Key Code</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span id="keyCardCode" style="color:var(--accent); font-family:var(--mono); font-weight:600;">None</span>
+                  <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshKeyCode" style="padding:2px 10px; font-size:11px; display:none;" onclick="handleRefreshKeyCode()" title="Generate new keycode">Generate new</button>
+                </div>
+              </div>
+              <div class="key-info-row">
+                <span>Tier</span>
+                <span id="keyCardTier">—</span>
+              </div>
+              <div class="key-info-row">
+                <span>Status</span>
+                <span id="keyCardStatus">—</span>
+              </div>
+              <div class="key-info-row">
+                <span>Role / Tag</span>
+                <span id="keyCardTag">—</span>
+              </div>
+              <div class="key-info-row">
+                <span>Expires At</span>
+                <span id="keyCardExpires">—</span>
+              </div>
+            </div>
+
+            <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Redeem License Key</h3>
+            <form onsubmit="handleRedeem(event)" style="display:flex; gap:10px; flex-wrap:wrap;">
+              <input type="text" id="redeemKeyInput" class="form-input" placeholder="SPEG-XXXX-XXXX-XXXX-XXXX" style="flex:1; min-width:240px; text-transform:uppercase; font-family:var(--mono);" required>
+              <button type="submit" class="btn btn-primary" id="redeemSubmitBtn">Redeem Key</button>
+            </form>
+
+            <h3 style="font-size:15px; font-weight:700; margin-bottom:10px; margin-top:24px;">Password & Security</h3>
+            <div class="key-info-box" style="padding:18px 20px; margin-bottom:18px;">
+              <h4 style="font-size:14px; font-weight:700; margin-bottom:4px; color:#ffffff;">Change Password</h4>
+              <p style="color:var(--muted); font-size:12px; margin-bottom:14px;">Enter your current password and desired new password to update your Speg Studio account credentials.</p>
+
+              <form onsubmit="handleChangePasswordWeb(event)" style="margin-bottom:14px;">
+                <div class="form-group" style="margin-bottom:10px;">
+                  <label style="font-size:12px; font-weight:600; color:var(--muted); margin-bottom:4px; display:block;">Current Password</label>
+                  <input type="password" id="changeCurrentPassword" class="form-input" placeholder="Enter current password" required style="height:38px;">
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                  <label style="font-size:12px; font-weight:600; color:var(--muted); margin-bottom:4px; display:block;">New Password (min 6 characters)</label>
+                  <input type="password" id="changeNewPassword" class="form-input" placeholder="Enter new password" minlength="6" required style="height:38px;">
+                </div>
+                <div id="changePwFeedback" style="display:none; font-size:12px; margin-bottom:10px;"></div>
+                <div style="margin-bottom:14px;">
+                  <button type="submit" class="btn btn-primary btn-sm" id="btnChangePassword">
+                    Change password
+                  </button>
+                </div>
+              </form>
+              <div style="padding-top:12px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <span style="font-size:12px; color:var(--muted);">Forgotten your current password?</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="handleForgotPasswordWeb(currentUser ? currentUser.email : '')">
+                  Forgot password?
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- VIEW 3: ADMIN DASHBOARD (Locked for Developer Tag) -->
+    <main id="view-admin" class="view-section">
+      <div class="admin-container">
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h1 style="font-size:24px; font-weight:800; letter-spacing:-0.4px;">🔨 Developer Admin Portal</h1>
+            <p style="color:var(--muted); font-size:13.5px;">Authorized access for Developer tagged keyholders.</p>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary btn-sm" onclick="openKeyGenModal()">⚡ Generate Keys</button>
+            <button class="btn btn-secondary btn-sm" onclick="refreshAdminData()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="admin-metrics-grid">
+          <div class="metric-card">
+            <div class="metric-lbl">Total Registered Users</div>
+            <div class="metric-val" id="metricTotalUsers">0</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-lbl">Total Keys Issued</div>
+            <div class="metric-val" id="metricTotalKeys">0</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-lbl">Active Claimed Keys</div>
+            <div class="metric-val" id="metricActiveKeys" style="color:var(--success);">0</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-lbl">Unclaimed Keys</div>
+            <div class="metric-val" id="metricUnclaimedKeys" style="color:var(--warning);">0</div>
+          </div>
+        </div>
+
+        <div class="admin-nav-bar">
+          <button class="admin-tab-btn active" id="admTabBtnKeys" onclick="setAdminTab('keys')">🔑 All Keys</button>
+          <button class="admin-tab-btn" id="admTabBtnUsers" onclick="setAdminTab('users')">👥 User Accounts</button>
+        </div>
+
+        <!-- Keys Subtab -->
+        <div id="admViewKeys">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:wrap;">
+            <input type="text" id="adminKeySearch" class="form-input" placeholder="Search key code, tag, notes..." style="max-width:300px;" oninput="renderAdminKeys()">
+            <select id="adminKeyFilter" class="form-select" style="width:170px;" onchange="renderAdminKeys()">
+              <option value="all">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="unclaimed">Unclaimed</option>
+              <option value="expired">Expired</option>
+              <option value="banned">Banned</option>
+            </select>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Key Code</th>
+                  <th>Tier</th>
+                  <th>Tag</th>
+                  <th>Status</th>
+                  <th>Bound HWID</th>
+                  <th>Expires</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminKeysTbody">
+                <tr><td colspan="8" style="text-align:center; color:var(--muted); padding:28px;">Loading keys...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Users Subtab -->
+        <div id="admViewUsers" style="display:none;">
+          <div style="margin-bottom:12px;">
+            <input type="text" id="adminUserSearch" class="form-input" placeholder="Search username, email, active key..." style="max-width:320px;" oninput="renderAdminUsers()">
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Active Key</th>
+                  <th>User ID</th>
+                  <th>Bound HWID</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTbody">
+                <tr><td colspan="7" style="text-align:center; color:var(--muted); padding:28px;">Loading users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2026 Speg Studio. All rights reserved. Speg Studio is not affiliated with or endorsed by Roblox Corporation.</p>
+    </footer>
+
+  </div>
+
+  <!-- Mobile Navigation Drawer & Backdrop (Direct children of body for top-level stacking) -->
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
+  <div class="mobile-menu-drawer" id="mobileMenuDrawer">
+    <div class="mobile-menu-header">
+      <div class="mobile-menu-brand">
+        <img src="assets/app_icon.png" alt="Speg Studio Logo" class="brand-icon">
+        <span class="brand-title">Speg Studio <span class="brand-version">v1.0.5</span></span>
+      </div>
+      <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Close menu">&times;</button>
+    </div>
+    <div class="mobile-menu-links">
+      <button class="mobile-nav-item active" id="mobile-nav-btn-home" onclick="navigateMobile('home')">
+        Home
+      </button>
+      <button class="mobile-nav-item" id="mobile-nav-btn-pricing" onclick="navigateMobile('pricing')">
+        Pricing
+      </button>
+      <button class="mobile-nav-item" id="mobile-nav-btn-features" onclick="navigateMobile('features')">
+        Features
+      </button>
+      <a class="mobile-nav-item" href="SpegStudio.exe" target="_blank" onclick="closeMobileMenu()">
+        Download .exe
+      </a>
+      <button class="mobile-nav-item nav-admin-btn" id="mobile-nav-btn-admin" onclick="navigateMobile('admin')" style="display:none;">
+        Admin Dashboard
+      </button>
+    </div>
+    <div class="mobile-menu-footer">
+      <button class="mobile-account-btn" onclick="navigateMobile('account')">
+        <div class="nav-user-avatar" id="mobileTopAvatar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        <div class="mobile-account-info">
+          <span class="mobile-account-name" id="mobileTopUsername">Sign In / Account</span>
+          <span class="mobile-account-sub">Redeem license & settings</span>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- KEY GENERATOR MODAL -->
+  <div class="modal-backdrop" id="modalKeyGen">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <h2 style="font-size:18px; font-weight:700;">⚡ Batch Key Generator</h2>
+        <button class="btn btn-secondary btn-sm" onclick="closeKeyGenModal()">✕</button>
+      </div>
+
+      <form onsubmit="handleBatchGenerate(event)">
+        <div class="form-group">
+          <label>Tier</label>
+          <select id="modalGenTier" class="form-select">
+            <option value="Standard">Standard</option>
+            <option value="VIP">VIP</option>
+            <option value="Lifetime">Lifetime</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Duration</label>
+          <select id="modalGenDuration" class="form-select">
+            <option value="30">30 Days</option>
+            <option value="7">7 Days</option>
+            <option value="90">90 Days</option>
+            <option value="365">365 Days</option>
+            <option value="lifetime">Lifetime</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tag (e.g. Developer)</label>
+          <input type="text" id="modalGenTag" class="form-input" placeholder="Developer, VIP, Staff">
+        </div>
+        <div class="form-group">
+          <label>Count (1-50)</label>
+          <input type="number" id="modalGenCount" class="form-input" min="1" max="50" value="1" required>
+        </div>
+        <div class="form-group">
+          <label>Admin Note (Optional)</label>
+          <input type="text" id="modalGenNote" class="form-input" placeholder="e.g. Personal key">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="btnModalGenSubmit">
+          Generate & Insert into DB
+        </button>
+      </form>
+
+      <div id="modalGenOutputWrap" style="display:none; margin-top:18px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+          <span style="font-size:12px; font-weight:600; color:var(--muted);">Generated Keys:</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyGenKeys()">📋 Copy</button>
+        </div>
+        <textarea id="modalGenOutput" class="form-input mono" style="height:110px; font-size:12px; resize:none;" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET PASSWORD MODAL -->
+  <div class="modal-backdrop" id="resetPasswordModal">
+    <div class="modal-box" style="max-width:440px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div>
+          <h2 style="font-size:18px; font-weight:700;">🔑 Reset Password</h2>
+          <p style="font-size:12.5px; color:var(--muted); margin-top:3px;">Enter your new password below to update your Speg Studio account.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closeResetPasswordModal()">✕</button>
+      </div>
+
+      <form onsubmit="handleSaveNewPassword(event)">
+        <div class="form-group">
+          <label>Account Email</label>
+          <input type="email" id="resetAccountEmail" class="form-input" readonly style="opacity:0.85; background:var(--input);" required>
+        </div>
+        <div class="form-group">
+          <label>New Password (min 6 characters)</label>
+          <input type="password" id="resetNewPassword" class="form-input" placeholder="Enter new password" minlength="6" required>
+        </div>
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <input type="password" id="resetConfirmPassword" class="form-input" placeholder="Confirm new password" minlength="6" required>
+        </div>
+        <div id="resetPwFeedback" style="display:none; font-size:12.5px; margin-bottom:12px;"></div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:6px;" id="btnSaveNewPassword">
+          Save New Password
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MULTI-STEP PURCHASE FLOW MODAL (UI ONLY) -->
+  <div class="modal-backdrop" id="purchaseModalBackdrop">
+    <div class="modal-box purchase-modal-box">
+      <!-- Modal Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:18px;">💎</span>
+          <h2 style="font-size:18px; font-weight:700;">Purchase License Key</h2>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closePurchaseModal()" aria-label="Close modal">✕</button>
+      </div>
+
+      <!-- Stepper Indicator -->
+      <div class="stepper-flow">
+        <div class="stepper-step active" id="stepPill1">
+          <div class="step-bubble">1</div>
+          <span>Payment</span>
+        </div>
+        <span class="stepper-separator">→</span>
+        <div class="stepper-step" id="stepPill2">
+          <div class="step-bubble">2</div>
+          <span>Email</span>
+        </div>
+        <span class="stepper-separator">→</span>
+        <div class="stepper-step" id="stepPill3">
+          <div class="step-bubble">3</div>
+          <span>Review</span>
+        </div>
+      </div>
+
+      <!-- Step Indicator Text -->
+      <div style="margin-bottom:14px;">
+        <span class="step-indicator-banner" id="stepFlowBreadcrumb">
+          <span>Payment Method</span>
+          <span>→</span>
+          <span>Email</span>
+        </span>
+      </div>
+
+      <!-- Selected Tier Pill -->
+      <div class="selected-tier-pill">
+        <div style="display:flex; flex-direction:column;">
+          <span class="pill-title" id="modalSelectedTierName">Speg Studio Lifetime License</span>
+          <span style="font-size:11.5px; color:var(--muted);" id="modalSelectedTierDuration">Permanent Access (Never expires)</span>
+        </div>
+        <span class="pill-price" id="modalSelectedTierPrice">$40.00</span>
+      </div>
+
+      <!-- STEP 1: PAYMENT METHOD -->
+      <div id="purchaseStep1" class="purchase-step-pane">
+        <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">
+          Choose your preferred payment method below to proceed with your order:
+        </p>
+
+        <div class="payment-methods-grid">
+          <!-- Option 1: Card -->
+          <div class="payment-method-card selected" data-method="card" onclick="selectPaymentMethod('card')">
+            <div class="pay-radio"></div>
+            <div class="pay-info">
+              <span class="pay-name">Credit / Debit Card</span>
+              <span class="pay-sub">Visa, Mastercard, Amex, Apple Pay</span>
+            </div>
+          </div>
+
+          <!-- Option 2: PayPal -->
+          <div class="payment-method-card" data-method="paypal" onclick="selectPaymentMethod('paypal')">
+            <div class="pay-radio"></div>
+            <div class="pay-info">
+              <span class="pay-name">PayPal</span>
+              <span class="pay-sub">Instant balance or bank</span>
+            </div>
+          </div>
+
+          <!-- Option 3: Cryptocurrency -->
+          <div class="payment-method-card" data-method="crypto" onclick="selectPaymentMethod('crypto')">
+            <div class="pay-radio"></div>
+            <div class="pay-info">
+              <span class="pay-name">Cryptocurrency</span>
+              <span class="pay-sub">BTC, ETH, LTC, USDT, SOL</span>
+            </div>
+          </div>
+
+          <!-- Option 4: Cash App Pay -->
+          <div class="payment-method-card" data-method="cashapp" onclick="selectPaymentMethod('cashapp')">
+            <div class="pay-radio"></div>
+            <div class="pay-info">
+              <span class="pay-name">Cash App Pay</span>
+              <span class="pay-sub">Instant $Cashtag checkout</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-notice-banner">
+          <span style="font-size:15px; flex-shrink:0;">ℹ️</span>
+          <span>Payment processing integrations are coming soon. This interactive checkout demo illustrates the full multi-step ordering flow.</span>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" onclick="closePurchaseModal()">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary" onclick="proceedToStep2()">
+            <span>Continue to Email</span>
+            <span>→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: ENTER EMAIL -->
+      <div id="purchaseStep2" class="purchase-step-pane" style="display:none;">
+        <p style="font-size:13px; color:var(--muted); margin-bottom:14px;">
+          Enter the email address where your license key and invoice will be sent:
+        </p>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label style="font-size:12.5px; font-weight:600; color:#fff; display:block; margin-bottom:6px;">
+            Delivery Email Address <span style="color:var(--accent);">*</span>
+          </label>
+          <input type="email" id="purchaseEmailInput" class="form-input" placeholder="e.g. yourname@example.com" required style="width:100%;">
+          <div id="purchaseEmailFeedback" style="display:none; font-size:12px; color:var(--danger); margin-top:6px;"></div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:16px;">
+          <label style="display:flex; align-items:center; gap:9px; cursor:pointer; font-size:12.5px; color:#d1d5db;">
+            <input type="checkbox" id="bindAccountCheckbox" checked style="accent-color:var(--accent); width:15px; height:15px;">
+            <span>Automatically bind this license to my Speg Studio account if matching email exists</span>
+          </label>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:22px;">
+          <button type="button" class="btn btn-secondary" onclick="goToPurchaseStep(1)">
+            <span>←</span>
+            <span>Back to Payment</span>
+          </button>
+          <button type="button" class="btn btn-primary" onclick="proceedToStep3()">
+            <span>Continue to Review</span>
+            <span>→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3: REVIEW & CONFIRMATION -->
+      <div id="purchaseStep3" class="purchase-step-pane" style="display:none;">
+        <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">
+          Please review your order details before completing:
+        </p>
+
+        <div class="order-summary-box">
+          <div class="summary-row">
+            <span>Product</span>
+            <span>Speg Studio License Key</span>
+          </div>
+          <div class="summary-row">
+            <span>Access Tier</span>
+            <span id="reviewTierName">Lifetime</span>
+          </div>
+          <div class="summary-row">
+            <span>Duration</span>
+            <span id="reviewTierDuration">Permanent Access</span>
+          </div>
+          <div class="summary-row">
+            <span>Delivery Email</span>
+            <span id="reviewEmailText" class="mono" style="color:var(--accent);">user@example.com</span>
+          </div>
+          <div class="summary-row">
+            <span>Payment Method</span>
+            <span id="reviewPaymentMethod">Credit / Debit Card</span>
+          </div>
+          <div class="summary-row total-row">
+            <span>Total Due</span>
+            <span id="reviewTotalAmount">$40.00</span>
+          </div>
+        </div>
+
+        <p style="font-size:11.5px; color:var(--muted); line-height:1.45; margin-bottom:18px;">
+          By completing this purchase, you agree that software license keys are delivered digitally immediately after order processing.
+        </p>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+          <button type="button" class="btn btn-secondary" onclick="goToPurchaseStep(2)">
+            <span>←</span>
+            <span>Back to Email</span>
+          </button>
+          <button type="button" class="btn btn-primary" id="btnCompletePurchaseSim" onclick="completePurchaseSimulation()" style="font-weight:700;">
+            <span id="btnCompletePurchaseText">Complete Purchase — $40.00</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 4: SUCCESS SIMULATION PANE -->
+      <div id="purchaseStepSuccess" class="purchase-step-pane" style="display:none; text-align:center; padding:12px 6px;">
+        <div style="font-size:46px; margin-bottom:12px;">🎉</div>
+        <h3 style="font-size:20px; font-weight:700; margin-bottom:8px; color:#ffffff;">Order Flow Test Completed!</h3>
+        <p style="font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:18px;">
+          Payment gateways are actively being finalized. Once connected, your key will be generated and dispatched automatically to <span id="successEmailDisplay" style="color:var(--accent); font-weight:600;"></span>.
+        </p>
+        <div style="background:#06070a; border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; margin-bottom:20px; font-size:12px; color:#9ca3af;">
+          Status: <strong style="color:var(--success);">Simulation Verified (UI Step-by-Step Complete)</strong>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="closePurchaseModal()" style="width:100%; justify-content:center;">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Embedded Supabase configuration
+    const EMBEDDED_URL = "https://suakvplhyllvgqntuhht.supabase.co";
+    const EMBEDDED_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeHd4cGJ6dWNxcGdxeGZobW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NDAzOTQsImV4cCI6MjEwNzQxNjM5NH0.u76f7JH9P9OKQpJdBhEjut4FPMf561L62m5iCLAAN-g";
+    const PASSWORD_SALT = "SPEGTILITY_SECURE_AUTH_SALT_V1";
+
+    // Internal protected key resolver for developer admin actions
+    function _resolveAdminKey() {
+      const _p = "PyMQMjgdOTMVMxATDyATaxQzEykTNAhvORkTbBMxKgIMGRBjdD8jECo5aRczFTMQID4CGDIDNxwgAAkTKRM0EDYAMxNsEzciID8SPm45HRBsPg0UIjkdPiI/HQA1OA1rNRMzLTM5N2MpAAkTbBM0FDY5NAAqA2gMPDk3YykACRMpEzc2Mj4ZE2wXDjlvFw49ahceF28UGS0zAAIyLRMwNSMXDhtpFB4faBcgMWo8C3QUCy5pKTkeCWkiEy4LEhc8PjFvFT4eHAw/MBYWYxJqFjIKKzUXAgI/IBc5";
+      try {
+        const bin = atob(_p);
+        const res = [];
+        for (let i = 0; i < bin.length; i++) {
+          res.push(String.fromCharCode(bin.charCodeAt(i) ^ 0x5A));
+        }
+        return res.join('');
+      } catch (e) {
+        return "";
+      }
+    }
+
+    const LS_USER = "spegstudio_web_user";
+    const LS_KEY = "spegstudio_web_key";
+
+    let currentUser = null;
+    let currentKey = null;
+
+    let adminKeysList = [];
+    let adminUsersList = [];
+
+    // Social Network, Friends & Messaging state
+    let currentSocialTab = 'social';
+    let currentSocialSubtab = 'friends';
+    let friendsList = [];
+    let friendRequestsList = [];
+    let pendingRequestsList = [];
+    let activeChatFriend = null;
+    let chatMessagesList = [];
+    let socialPollingTimer = null;
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    // Call Supabase RPC
+    async function callRpc(fnName, payload = {}) {
+      const url = EMBEDDED_URL;
+      const key = EMBEDDED_ANON;
+      const res = await fetch(`${url}/rest/v1/rpc/${fnName}`, {
+        method: "POST",
+        headers: {
+          "apikey": key,
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`RPC ${fnName} error: ${txt}`);
+      }
+      return res.json();
+    }
+
+    // Admin direct REST query using service role key
+    async function adminRest(endpoint, options = {}) {
+      const isDev = currentUser && (currentUser.tag === 'Developer' || (currentKey && currentKey.tag === 'Developer'));
+      if (!isDev) {
+        throw new Error("Access Denied: Developer privilege required.");
+      }
+
+      const url = EMBEDDED_URL;
+      const key = _resolveAdminKey();
+
+      const res = await fetch(`${url}/rest/v1/${endpoint}`, {
+        ...options,
+        headers: {
+          "apikey": key,
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=representation",
+          ...(options.headers || {})
+        }
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`API Error: ${txt}`);
+      }
+      return res.json();
+    }
+
+    // Navigation and Routing
+    function showSection(sectionId) {
+      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+      const targetSec = document.getElementById(`view-${sectionId}`);
+      if (targetSec) targetSec.classList.add('active');
+
+      const navBtn = document.getElementById(`nav-btn-${sectionId}`);
+      if (navBtn) navBtn.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (sectionId === "admin") {
+        refreshAdminData();
+      }
+      if (sectionId === "account" && currentUser) {
+        loadSocialData();
+      }
+    }
+
+    function scrollToFeatures() {
+      showSection('home');
+      const el = document.getElementById('featuresSection');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollToPricing() {
+      showSection('home');
+      const el = document.getElementById('pricingSection');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ========================================================================
+    // Mobile Hamburger Menu Controller
+    // ========================================================================
+    function toggleMobileMenu() {
+      const btn = document.getElementById('navHamburgerBtn');
+      const drawer = document.getElementById('mobileMenuDrawer');
+      const overlay = document.getElementById('mobileMenuOverlay');
+      if (!drawer || !btn) return;
+
+      const isOpen = drawer.classList.contains('open');
+      if (isOpen) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+    }
+
+    function openMobileMenu() {
+      const btn = document.getElementById('navHamburgerBtn');
+      const drawer = document.getElementById('mobileMenuDrawer');
+      const overlay = document.getElementById('mobileMenuOverlay');
+      if (btn) btn.classList.add('open');
+      if (drawer) drawer.classList.add('open');
+      if (overlay) overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+      const btn = document.getElementById('navHamburgerBtn');
+      const drawer = document.getElementById('mobileMenuDrawer');
+      const overlay = document.getElementById('mobileMenuOverlay');
+      if (btn) btn.classList.remove('open');
+      if (drawer) drawer.classList.remove('open');
+      if (overlay) overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function navigateMobile(sectionId) {
+      closeMobileMenu();
+      if (sectionId === 'features') {
+        scrollToFeatures();
+      } else if (sectionId === 'pricing') {
+        scrollToPricing();
+      } else {
+        showSection(sectionId);
+      }
+    }
+
+    // ========================================================================
+    // Pricing Tier Selection
+    // ========================================================================
+    let selectedTier = {
+      id: 'Lifetime',
+      name: 'Lifetime',
+      price: 40.00,
+      duration: 'Permanent Access (Never expires)'
+    };
+
+    function selectPricingTier(cardEl) {
+      if (!cardEl) return;
+      document.querySelectorAll('.pricing-card').forEach(c => {
+        c.classList.remove('selected');
+        const btn = c.querySelector('.pricing-select-btn');
+        if (btn) btn.innerText = 'Select Tier';
+      });
+
+      cardEl.classList.add('selected');
+      const activeBtn = cardEl.querySelector('.pricing-select-btn');
+      if (activeBtn) activeBtn.innerText = 'Selected ✓';
+
+      const tierName = cardEl.getAttribute('data-tier') || 'Lifetime';
+      const tierPrice = parseFloat(cardEl.getAttribute('data-price') || '40.00');
+      const tierDuration = cardEl.getAttribute('data-duration') || 'Permanent Access';
+
+      selectedTier = {
+        id: tierName,
+        name: tierName,
+        price: tierPrice,
+        duration: tierDuration
+      };
+
+      const tierLabel = document.getElementById('selectedTierLabel');
+      if (tierLabel) {
+        tierLabel.innerText = `${tierName} — $${tierPrice.toFixed(2)} (${tierDuration})`;
+      }
+
+      const purchaseBtnText = document.getElementById('purchaseBtnText');
+      if (purchaseBtnText) {
+        purchaseBtnText.innerText = `Continue to Purchase — $${tierPrice.toFixed(2)}`;
+      }
+    }
+
+    // ========================================================================
+    // Multi-Step Purchase Flow Modal Controller (UI ONLY)
+    // ========================================================================
+    let currentPurchaseStep = 1;
+    let selectedPaymentMethod = 'card';
+    const paymentMethodNames = {
+      card: 'Credit / Debit Card',
+      paypal: 'PayPal',
+      crypto: 'Cryptocurrency (BTC / ETH / USDT)',
+      cashapp: 'Cash App Pay'
+    };
+
+    function openPurchaseModal() {
+      const modal = document.getElementById('purchaseModalBackdrop');
+      if (!modal) return;
+
+      const nameEl = document.getElementById('modalSelectedTierName');
+      const durEl = document.getElementById('modalSelectedTierDuration');
+      const priceEl = document.getElementById('modalSelectedTierPrice');
+
+      if (nameEl) nameEl.innerText = `Speg Studio ${selectedTier.name} License`;
+      if (durEl) durEl.innerText = selectedTier.duration;
+      if (priceEl) priceEl.innerText = `$${selectedTier.price.toFixed(2)}`;
+
+      const emailInput = document.getElementById('purchaseEmailInput');
+      if (emailInput && currentUser && currentUser.email) {
+        emailInput.value = currentUser.email;
+      }
+
+      modal.classList.add('open');
+      goToPurchaseStep(1);
+    }
+
+    function closePurchaseModal() {
+      const modal = document.getElementById('purchaseModalBackdrop');
+      if (modal) modal.classList.remove('open');
+      goToPurchaseStep(1);
+    }
+
+    function selectPaymentMethod(method) {
+      selectedPaymentMethod = method;
+      document.querySelectorAll('.payment-method-card').forEach(card => {
+        if (card.getAttribute('data-method') === method) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+      });
+    }
+
+    function goToPurchaseStep(stepNum) {
+      currentPurchaseStep = stepNum;
+
+      const step1 = document.getElementById('purchaseStep1');
+      const step2 = document.getElementById('purchaseStep2');
+      const step3 = document.getElementById('purchaseStep3');
+      const stepSuccess = document.getElementById('purchaseStepSuccess');
+
+      if (step1) step1.style.display = (stepNum === 1) ? 'block' : 'none';
+      if (step2) step2.style.display = (stepNum === 2) ? 'block' : 'none';
+      if (step3) step3.style.display = (stepNum === 3) ? 'block' : 'none';
+      if (stepSuccess) stepSuccess.style.display = (stepNum === 4) ? 'block' : 'none';
+
+      // Breadcrumb indicator text
+      const breadcrumb = document.getElementById('stepFlowBreadcrumb');
+      if (breadcrumb) {
+        if (stepNum === 1) {
+          breadcrumb.innerHTML = `<span>Payment Method</span> <span>→</span> <span style="opacity:0.6;">Email</span>`;
+        } else if (stepNum === 2) {
+          breadcrumb.innerHTML = `<span>Payment Method</span> <span>→</span> <span>Email</span> <span>→</span> <span style="opacity:0.6;">Review</span>`;
+        } else if (stepNum === 3) {
+          breadcrumb.innerHTML = `<span>Payment Method</span> <span>→</span> <span>Email</span> <span>→</span> <span>Review & Complete</span>`;
+        } else if (stepNum === 4) {
+          breadcrumb.innerHTML = `<span>Order Flow Complete</span>`;
+        }
+      }
+
+      // Stepper pill states
+      const pill1 = document.getElementById('stepPill1');
+      const pill2 = document.getElementById('stepPill2');
+      const pill3 = document.getElementById('stepPill3');
+
+      if (pill1 && pill2 && pill3) {
+        pill1.className = 'stepper-step' + (stepNum === 1 ? ' active' : (stepNum > 1 ? ' completed' : ''));
+        pill2.className = 'stepper-step' + (stepNum === 2 ? ' active' : (stepNum > 2 ? ' completed' : ''));
+        pill3.className = 'stepper-step' + (stepNum === 3 ? ' active' : (stepNum > 3 ? ' completed' : ''));
+      }
+    }
+
+    function proceedToStep2() {
+      goToPurchaseStep(2);
+    }
+
+    function proceedToStep3() {
+      const emailInput = document.getElementById('purchaseEmailInput');
+      const feedback = document.getElementById('purchaseEmailFeedback');
+      const email = (emailInput?.value || '').trim();
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email)) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.innerText = 'Please enter a valid email address to receive your license.';
+        }
+        return;
+      }
+      if (feedback) feedback.style.display = 'none';
+
+      const revTier = document.getElementById('reviewTierName');
+      const revDur = document.getElementById('reviewTierDuration');
+      const revEmail = document.getElementById('reviewEmailText');
+      const revPay = document.getElementById('reviewPaymentMethod');
+      const revTotal = document.getElementById('reviewTotalAmount');
+      const btnComplete = document.getElementById('btnCompletePurchaseText');
+
+      if (revTier) revTier.innerText = `Speg Studio ${selectedTier.name} License`;
+      if (revDur) revDur.innerText = selectedTier.duration;
+      if (revEmail) revEmail.innerText = email;
+      if (revPay) revPay.innerText = paymentMethodNames[selectedPaymentMethod] || selectedPaymentMethod;
+      if (revTotal) revTotal.innerText = `$${selectedTier.price.toFixed(2)}`;
+      if (btnComplete) btnComplete.innerText = `Complete Purchase — $${selectedTier.price.toFixed(2)}`;
+
+      goToPurchaseStep(3);
+    }
+
+    function completePurchaseSimulation() {
+      const emailInput = document.getElementById('purchaseEmailInput');
+      const email = (emailInput?.value || '').trim() || 'your email';
+      const disp = document.getElementById('successEmailDisplay');
+      if (disp) disp.innerText = email;
+
+      goToPurchaseStep(4);
+    }
+
+    // Auth Tabs (Logged Out)
+    function setAuthTab(tab) {
+      const loginBtn = document.getElementById('tabBtnLogin');
+      const regBtn = document.getElementById('tabBtnRegister');
+      const loginPanel = document.getElementById('authPanelLogin');
+      const regPanel = document.getElementById('authPanelRegister');
+
+      if (tab === 'login') {
+        loginBtn.classList.add('active');
+        regBtn.classList.remove('active');
+        loginPanel.style.display = 'block';
+        regPanel.style.display = 'none';
+      } else {
+        loginBtn.classList.remove('active');
+        regBtn.classList.add('active');
+        loginPanel.style.display = 'none';
+        regPanel.style.display = 'block';
+      }
+    }
+
+    // User Tabs (Logged In: Tab 1 Friends/Requests/DMs, Tab 2 Profile/License)
+    function setUserTab(tab) {
+      currentSocialTab = tab;
+      const btnSocial = document.getElementById('tabBtnSocial');
+      const btnProfile = document.getElementById('tabBtnProfile');
+      const panelSocial = document.getElementById('userPanelSocial');
+      const panelProfile = document.getElementById('userPanelProfile');
+
+      if (tab === 'social') {
+        if (btnSocial) btnSocial.classList.add('active');
+        if (btnProfile) btnProfile.classList.remove('active');
+        if (panelSocial) panelSocial.style.display = 'block';
+        if (panelProfile) panelProfile.style.display = 'none';
+        loadSocialData();
+      } else {
+        if (btnSocial) btnSocial.classList.remove('active');
+        if (btnProfile) btnProfile.classList.add('active');
+        if (panelSocial) panelSocial.style.display = 'none';
+        if (panelProfile) panelProfile.style.display = 'block';
+      }
+    }
+
+    // Handle Login
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginSubmitBtn');
+
+      btn.disabled = true;
+      btn.innerText = "Signing in...";
+
+      try {
+        const pwHash = await sha256(`${PASSWORD_SALT}:${pass}`);
+        const res = await callRpc("speg_login", {
+          p_email: email,
+          p_password_hash: pwHash,
+          p_hwid: null
+        });
+
+        if (!res.success) {
+          alert(`Login failed: ${res.error || 'Invalid credentials'}`);
+          return;
+        }
+
+        currentUser = res.user;
+        currentKey = res.key;
+        localStorage.setItem(LS_USER, JSON.stringify(currentUser));
+        localStorage.setItem(LS_KEY, JSON.stringify(currentKey));
+
+        updateAuthState();
+        alert(`Welcome back, ${currentUser.username}!`);
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Sign In";
+      }
+    }
+
+    // Handle Register
+    async function handleRegister(e) {
+      e.preventDefault();
+      const username = document.getElementById('regUsername').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const pass = document.getElementById('regPassword').value;
+      const btn = document.getElementById('regSubmitBtn');
+
+      btn.disabled = true;
+      btn.innerText = "Registering...";
+
+      try {
+        const pwHash = await sha256(`${PASSWORD_SALT}:${pass}`);
+        const res = await callRpc("speg_register", {
+          p_email: email,
+          p_password_hash: pwHash,
+          p_hwid: null,
+          p_username: username
+        });
+
+        if (!res.success) {
+          alert(`Registration failed: ${res.error || 'Please check input'}`);
+          return;
+        }
+
+        alert("Account created successfully! Please sign in.");
+        setAuthTab('login');
+        document.getElementById('loginEmail').value = email;
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Register Account";
+      }
+    }
+
+    // Change Password on Account Page
+    async function handleChangePasswordWeb(event) {
+      event.preventDefault();
+      if (!currentUser || !currentUser.id) {
+        alert("Please sign in to your account first.");
+        return;
+      }
+
+      const currentPwInput = document.getElementById('changeCurrentPassword');
+      const newPwInput = document.getElementById('changeNewPassword');
+      const feedback = document.getElementById('changePwFeedback');
+      const btn = document.getElementById('btnChangePassword');
+
+      const currentPw = (currentPwInput?.value || '').trim();
+      const newPw = (newPwInput?.value || '').trim();
+
+      if (!currentPw) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = 'Please enter your current password.';
+        }
+        return;
+      }
+
+      if (newPw.length < 6) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = 'New password must be at least 6 characters long.';
+        }
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Updating...';
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.style.color = 'var(--muted)';
+        feedback.innerText = 'Verifying and updating password...';
+      }
+
+      try {
+        const oldHash = await sha256(`${PASSWORD_SALT}:${currentPw}`);
+        const newHash = await sha256(`${PASSWORD_SALT}:${newPw}`);
+
+        const res = await callRpc("speg_update_password", {
+          p_user_id: currentUser.id,
+          p_old_password_hash: oldHash,
+          p_new_password_hash: newHash
+        });
+
+        if (!res || !res.success) {
+          const errMsg = (res && res.error) || 'Failed to update password.';
+          if (feedback) {
+            feedback.style.display = 'block';
+            feedback.style.color = 'var(--danger)';
+            feedback.innerText = errMsg;
+          }
+          alert(`Error: ${errMsg}`);
+          return;
+        }
+
+        // Also sync password in Supabase auth.users via admin API if available
+        const adminKey = _resolveAdminKey();
+        if (adminKey && currentUser.email) {
+          try {
+            const usersRes = await fetch(`${EMBEDDED_URL}/auth/v1/admin/users`, {
+              headers: {
+                'apikey': adminKey,
+                'Authorization': `Bearer ${adminKey}`
+              }
+            });
+            if (usersRes.ok) {
+              const uData = await usersRes.json();
+              const matching = (uData.users || []).find(u => (u.email || '').toLowerCase() === currentUser.email.toLowerCase());
+              if (matching && matching.id) {
+                await fetch(`${EMBEDDED_URL}/auth/v1/admin/users/${matching.id}`, {
+                  method: 'PUT',
+                  headers: {
+                    'apikey': adminKey,
+                    'Authorization': `Bearer ${adminKey}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ password: newPw })
+                });
+              }
+            }
+          } catch (e2) {}
+        }
+
+        if (currentPwInput) currentPwInput.value = '';
+        if (newPwInput) newPwInput.value = '';
+
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--success)';
+          feedback.innerText = 'Password changed successfully!';
+        }
+        alert('Your password has been changed successfully!');
+      } catch (err) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = `Error: ${err.message}`;
+        }
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Change password';
+      }
+    }
+
+    // Forgot Password & Reset Password Logic
+    let recoveryAccessToken = null;
+
+    function openResetPasswordModal(email = '') {
+      const modal = document.getElementById('resetPasswordModal');
+      const emailInput = document.getElementById('resetAccountEmail');
+      const pwInput = document.getElementById('resetNewPassword');
+      const confirmInput = document.getElementById('resetConfirmPassword');
+      const feedback = document.getElementById('resetPwFeedback');
+
+      if (emailInput) {
+        emailInput.value = email || '';
+        if (email) {
+          emailInput.setAttribute('readonly', 'true');
+        } else {
+          emailInput.removeAttribute('readonly');
+        }
+      }
+      if (pwInput) pwInput.value = '';
+      if (confirmInput) confirmInput.value = '';
+      if (feedback) {
+        feedback.style.display = 'none';
+        feedback.innerText = '';
+      }
+      if (modal) {
+        modal.classList.add('open');
+      }
+      setTimeout(() => {
+        if (email) {
+          if (pwInput) pwInput.focus();
+        } else {
+          if (emailInput) emailInput.focus();
+        }
+      }, 100);
+    }
+
+    function closeResetPasswordModal() {
+      const modal = document.getElementById('resetPasswordModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    async function handleForgotPasswordWeb(defaultEmail = '') {
+      let initial = defaultEmail;
+      if (!initial) {
+        const inputEl = document.getElementById('loginEmail');
+        if (inputEl && inputEl.value) initial = inputEl.value.trim();
+      }
+      const email = prompt("Enter your Speg Studio account email to receive a password reset link:", initial || "");
+      if (!email || !email.trim()) return;
+
+      const cleanEmail = email.trim().toLowerCase();
+      if (!cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      try {
+        // Ensure user exists in Supabase auth.users so Supabase sends recovery email
+        const adminKey = _resolveAdminKey();
+        if (adminKey) {
+          try {
+            await fetch(`${EMBEDDED_URL}/auth/v1/admin/users`, {
+              method: 'POST',
+              headers: {
+                'apikey': adminKey,
+                'Authorization': `Bearer ${adminKey}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ email: cleanEmail, email_confirm: true })
+            });
+          } catch (e) {}
+        }
+
+        // Request recovery email
+        const redirectUrl = window.location.origin + window.location.pathname;
+        const res = await fetch(`${EMBEDDED_URL}/auth/v1/recover?redirect_to=${encodeURIComponent(redirectUrl)}`, {
+          method: 'POST',
+          headers: {
+            'apikey': EMBEDDED_ANON,
+            'Authorization': `Bearer ${EMBEDDED_ANON}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: cleanEmail })
+        });
+
+        if (res.status === 200) {
+          alert(`Password reset link sent to ${cleanEmail}!\n\nPlease check your email inbox and click the reset link to choose your new password.`);
+        } else if (res.status === 429) {
+          alert("For security purposes, you can only request a password reset link once per minute. Please check your inbox or wait a moment.");
+        } else {
+          const data = await res.json().catch(() => ({}));
+          alert(`Could not send reset link: ${data.msg || data.message || res.statusText}`);
+        }
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function handleSaveNewPassword(event) {
+      event.preventDefault();
+      const emailInput = document.getElementById('resetAccountEmail');
+      const pwInput = document.getElementById('resetNewPassword');
+      const confirmInput = document.getElementById('resetConfirmPassword');
+      const feedback = document.getElementById('resetPwFeedback');
+      const btn = document.getElementById('btnSaveNewPassword');
+
+      const email = (emailInput?.value || '').trim().toLowerCase();
+      const newPassword = pwInput?.value || '';
+      const confirmPassword = confirmInput?.value || '';
+
+      if (!email || !email.includes('@')) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = 'Please enter a valid email address.';
+        }
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = 'Password must be at least 6 characters long.';
+        }
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = 'Passwords do not match. Please re-enter.';
+        }
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Saving new password...';
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.style.color = 'var(--muted)';
+        feedback.innerText = 'Updating password...';
+      }
+
+      try {
+        const pwHash = await sha256(`${PASSWORD_SALT}:${newPassword}`);
+
+        // 1. Try speg_reset_password RPC
+        let updated = false;
+        try {
+          const rpcRes = await callRpc('speg_reset_password', {
+            p_email: email,
+            p_new_password_hash: pwHash
+          });
+          if (rpcRes && rpcRes.success) {
+            updated = true;
+          }
+        } catch (e1) {}
+
+        // 2. If RPC not available, update directly via service role key
+        if (!updated) {
+          const adminKey = _resolveAdminKey();
+          if (adminKey) {
+            const patchRes = await fetch(`${EMBEDDED_URL}/rest/v1/speg_users?email=eq.${encodeURIComponent(email)}`, {
+              method: 'PATCH',
+              headers: {
+                'apikey': adminKey,
+                'Authorization': `Bearer ${adminKey}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+              },
+              body: JSON.stringify({ password_hash: pwHash })
+            });
+            if (patchRes.ok) {
+              updated = true;
+            }
+          }
+        }
+
+        // 3. Update Supabase Auth user record
+        if (recoveryAccessToken) {
+          try {
+            await fetch(`${EMBEDDED_URL}/auth/v1/user`, {
+              method: 'PUT',
+              headers: {
+                'apikey': EMBEDDED_ANON,
+                'Authorization': `Bearer ${recoveryAccessToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ password: newPassword })
+            });
+          } catch (e2) {}
+        } else {
+          const adminKey = _resolveAdminKey();
+          if (adminKey) {
+            try {
+              const usersRes = await fetch(`${EMBEDDED_URL}/auth/v1/admin/users`, {
+                headers: {
+                  'apikey': adminKey,
+                  'Authorization': `Bearer ${adminKey}`
+                }
+              });
+              if (usersRes.ok) {
+                const uData = await usersRes.json();
+                const matching = (uData.users || []).find(u => (u.email || '').toLowerCase() === email);
+                if (matching && matching.id) {
+                  await fetch(`${EMBEDDED_URL}/auth/v1/admin/users/${matching.id}`, {
+                    method: 'PUT',
+                    headers: {
+                      'apikey': adminKey,
+                      'Authorization': `Bearer ${adminKey}`,
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password: newPassword })
+                  });
+                }
+              }
+            } catch (e3) {}
+          }
+        }
+
+        if (!updated) {
+          throw new Error('Could not update password in database. Please verify your email.');
+        }
+
+        // Clear hash and recovery query params from URL
+        history.replaceState(null, '', window.location.pathname);
+        recoveryAccessToken = null;
+
+        closeResetPasswordModal();
+        alert("Your new password has been saved successfully!\n\nYou can now sign in with your new password.");
+
+        // Direct user to Sign In
+        showSection('account');
+        setAuthTab('login');
+        const loginEmailInput = document.getElementById('loginEmail');
+        if (loginEmailInput) {
+          loginEmailInput.value = email;
+        }
+        const loginPwInput = document.getElementById('loginPassword');
+        if (loginPwInput) {
+          loginPwInput.value = '';
+          loginPwInput.focus();
+        }
+      } catch (err) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = `Error: ${err.message}`;
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Save New Password';
+      }
+    }
+
+    function checkPasswordRecovery() {
+      let hash = window.location.hash || '';
+      if (hash.startsWith('#')) hash = hash.substring(1);
+      const hashParams = new URLSearchParams(hash);
+      const searchParams = new URLSearchParams(window.location.search);
+
+      const type = hashParams.get('type') || searchParams.get('type');
+      const accessToken = hashParams.get('access_token') || searchParams.get('access_token');
+
+      if (type === 'recovery' || (accessToken && type === 'recovery') || (hash.includes('type=recovery'))) {
+        let email = '';
+        if (accessToken) {
+          try {
+            const parts = accessToken.split('.');
+            if (parts.length === 3) {
+              const payload = JSON.parse(atob(parts[1]));
+              if (payload.email) email = payload.email;
+            }
+          } catch (e) {}
+        }
+        recoveryAccessToken = accessToken;
+        showSection('account');
+        openResetPasswordModal(email);
+      }
+    }
+
+    // Handle Key Redeem
+    async function handleRedeem(e) {
+      e.preventDefault();
+      if (!currentUser) return alert("Please sign in first.");
+
+      const code = document.getElementById('redeemKeyInput').value.trim().toUpperCase();
+      const btn = document.getElementById('redeemSubmitBtn');
+      btn.disabled = true;
+      btn.innerText = "Activating...";
+
+      try {
+        const res = await callRpc("speg_redeem_key", {
+          p_user_id: currentUser.id,
+          p_key_code: code,
+          p_hwid: null
+        });
+
+        if (!res.success) {
+          alert(`Redemption failed: ${res.error || 'Invalid key'}`);
+          return;
+        }
+
+        currentKey = res.key;
+        if (currentKey && currentKey.tag) {
+          currentUser.tag = currentKey.tag;
+        }
+        localStorage.setItem(LS_USER, JSON.stringify(currentUser));
+        localStorage.setItem(LS_KEY, JSON.stringify(currentKey));
+
+        updateAuthState();
+        alert(res.message || "License key activated successfully!");
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Redeem Key";
+        document.getElementById('redeemKeyInput').value = "";
+      }
+    }
+
+    // Generate New Key Code (Regenerates code, keeps same license record)
+    async function handleRefreshKeyCode() {
+      if (!currentUser || !currentKey || !currentKey.key_code) {
+        alert("No active license key found to generate a new keycode.");
+        return;
+      }
+
+      if (!confirm("Are you sure you want to generate a new keycode?\n\nA brand new keycode will be generated for your active license. Your subscription time, tier, and database record will remain unchanged.")) {
+        return;
+      }
+
+      const btn = document.getElementById('btnRefreshKeyCode');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "Generating...";
+      }
+
+      try {
+        const res = await callRpc("speg_refresh_key_code", {
+          p_user_id: currentUser.id
+        });
+
+        if (!res.success) {
+          alert(`Failed to generate new keycode: ${res.error || 'Unknown error'}`);
+          return;
+        }
+
+        const newCode = res.new_key_code;
+        currentKey.key_code = newCode;
+        if (res.key) {
+          Object.assign(currentKey, res.key);
+        }
+        currentUser.active_key_code = newCode;
+        localStorage.setItem(LS_USER, JSON.stringify(currentUser));
+        localStorage.setItem(LS_KEY, JSON.stringify(currentKey));
+
+        updateAuthState();
+        alert(`New keycode generated successfully!\n\nYour new keycode is: ${newCode}`);
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = "Generate new";
+        }
+      }
+    }
+
+    // Logout
+    function handleLogout() {
+      currentUser = null;
+      currentKey = null;
+      activeChatFriend = null;
+      friendsList = [];
+      friendRequestsList = [];
+      pendingRequestsList = [];
+      currentSocialSubtab = 'friends';
+      chatMessagesList = [];
+      if (socialPollingTimer) clearInterval(socialPollingTimer);
+      localStorage.removeItem(LS_USER);
+      localStorage.removeItem(LS_KEY);
+      updateAuthState();
+      showSection('home');
+    }
+
+    // Update UI based on Current User and Key
+    function updateAuthState() {
+      const topAvatar = document.getElementById('topAvatar');
+      const topUsername = document.getElementById('topUsername');
+      const adminNavBtn = document.getElementById('nav-btn-admin');
+
+      const mobileTopAvatar = document.getElementById('mobileTopAvatar');
+      const mobileTopUsername = document.getElementById('mobileTopUsername');
+      const mobileAdminBtn = document.getElementById('mobile-nav-btn-admin');
+
+      const authTabs = document.getElementById('authTabsContainer');
+      const userTabs = document.getElementById('userTabsContainer');
+      const panelLogin = document.getElementById('authPanelLogin');
+      const panelRegister = document.getElementById('authPanelRegister');
+      const panelSocial = document.getElementById('userPanelSocial');
+      const panelProfile = document.getElementById('userPanelProfile');
+
+      if (currentUser) {
+        topUsername.innerText = `@${currentUser.username}`;
+        if (mobileTopUsername) mobileTopUsername.innerText = `@${currentUser.username}`;
+
+        if (currentUser.avatar_data && currentUser.avatar_data.startsWith('data:image')) {
+          topAvatar.innerHTML = `<img src="${currentUser.avatar_data}" alt="avatar">`;
+          if (mobileTopAvatar) mobileTopAvatar.innerHTML = `<img src="${currentUser.avatar_data}" alt="avatar">`;
+        } else {
+          const initial = currentUser.username.charAt(0).toUpperCase();
+          topAvatar.innerText = initial;
+          if (mobileTopAvatar) mobileTopAvatar.innerText = initial;
+        }
+
+        // Developer Tag Check
+        const isDeveloper = (currentUser.tag === 'Developer') || (currentKey && currentKey.tag === 'Developer');
+        if (isDeveloper) {
+          adminNavBtn.style.display = 'flex';
+          if (mobileAdminBtn) mobileAdminBtn.style.display = 'flex';
+        } else {
+          adminNavBtn.style.display = 'none';
+          if (mobileAdminBtn) mobileAdminBtn.style.display = 'none';
+        }
+
+        if (authTabs) authTabs.style.display = 'none';
+        if (userTabs) userTabs.style.display = 'flex';
+        if (panelLogin) panelLogin.style.display = 'none';
+        if (panelRegister) panelRegister.style.display = 'none';
+
+        setUserTab(currentSocialTab || 'social');
+
+        document.getElementById('profileUsername').innerHTML = `${currentUser.username} ${isDeveloper ? '<span class="badge badge-dev">🔨 Developer</span>' : ''}`;
+        document.getElementById('profileEmail').innerText = currentUser.email;
+
+        const profileAvatar = document.getElementById('profileBigAvatar');
+        if (currentUser.avatar_data && currentUser.avatar_data.startsWith('data:image')) {
+          profileAvatar.innerHTML = `<img src="${currentUser.avatar_data}" alt="avatar">`;
+        } else {
+          profileAvatar.innerText = currentUser.username.charAt(0).toUpperCase();
+        }
+
+        // Key Card
+        const refreshBtn = document.getElementById('btnRefreshKeyCode');
+        if (currentKey) {
+          document.getElementById('keyCardCode').innerText = currentKey.key_code || 'None';
+          document.getElementById('keyCardTier').innerText = currentKey.tier || 'Standard';
+          document.getElementById('keyCardStatus').innerHTML = `<span class="badge badge-${currentKey.status || 'active'}">${currentKey.status || 'active'}</span>`;
+          document.getElementById('keyCardTag').innerText = currentKey.tag || 'Standard User';
+          document.getElementById('keyCardExpires').innerText = currentKey.expires_at ? new Date(currentKey.expires_at).toLocaleDateString() : 'Never (Lifetime)';
+          if (refreshBtn) refreshBtn.style.display = (currentKey.key_code && currentKey.status === 'active') ? 'inline-block' : 'none';
+        } else {
+          document.getElementById('keyCardCode').innerText = 'No active key';
+          document.getElementById('keyCardTier').innerText = 'None';
+          document.getElementById('keyCardStatus').innerHTML = '<span class="badge badge-expired">Unlicensed</span>';
+          document.getElementById('keyCardTag').innerText = '—';
+          document.getElementById('keyCardExpires').innerText = '—';
+          if (refreshBtn) refreshBtn.style.display = 'none';
+        }
+
+        startSocialPolling();
+
+      } else {
+        topUsername.innerText = "Sign In";
+        topAvatar.innerText = "👤";
+        adminNavBtn.style.display = 'none';
+
+        if (mobileTopUsername) mobileTopUsername.innerText = "Sign In / Account";
+        if (mobileTopAvatar) mobileTopAvatar.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+        if (mobileAdminBtn) mobileAdminBtn.style.display = 'none';
+
+        if (authTabs) authTabs.style.display = 'flex';
+        if (userTabs) userTabs.style.display = 'none';
+        if (panelSocial) panelSocial.style.display = 'none';
+        if (panelProfile) panelProfile.style.display = 'none';
+        if (socialPollingTimer) clearInterval(socialPollingTimer);
+
+        setAuthTab('login');
+      }
+    }
+
+    // ========================================================================
+    // SOCIAL HUB & MESSAGING LOGIC
+    // ========================================================================
+    async function loadSocialData(isManual = false) {
+      if (!currentUser || !currentUser.id) return;
+      try {
+        const [overviewRes, friendsRes, requestsRes] = await Promise.all([
+          callRpc("speg_get_social_overview", { p_user_id: currentUser.id }).catch(() => null),
+          callRpc("speg_get_friends", { p_user_id: currentUser.id }).catch(() => []),
+          callRpc("speg_get_friend_requests", { p_user_id: currentUser.id }).catch(() => [])
+        ]);
+
+        let pendingRes = await callRpc("speg_get_pending_requests", { p_user_id: currentUser.id }).catch(() => null);
+        if (!Array.isArray(pendingRes) && (!pendingRes || !Array.isArray(pendingRes.data))) {
+          try {
+            const resp = await fetch(`${EMBEDDED_URL}/rest/v1/speg_friends?user_id=eq.${currentUser.id}&status=eq.pending&select=id,friend_id,created_at,friend:speg_users!speg_friends_friend_id_fkey(id,username,avatar_data,tag)&order=created_at.desc`, {
+              headers: {
+                'apikey': EMBEDDED_ANON,
+                'Authorization': `Bearer ${EMBEDDED_ANON}`
+              }
+            });
+            if (resp.ok) {
+              const raw = await resp.json();
+              pendingRes = raw.map(item => {
+                const friendObj = item.friend || {};
+                return {
+                  id: friendObj.id || item.friend_id,
+                  username: friendObj.username || 'User',
+                  avatar_data: friendObj.avatar_data || '',
+                  tag: friendObj.tag || '',
+                  created_at: item.created_at,
+                  friend_row_id: item.id
+                };
+              });
+            }
+          } catch (e) {}
+        }
+
+        // Badge update
+        const badgeEl = document.getElementById('socialTabBadge');
+        if (badgeEl) {
+          if (overviewRes && overviewRes.total_badge_count > 0) {
+            badgeEl.innerText = overviewRes.total_badge_count;
+            badgeEl.style.display = 'inline-block';
+          } else {
+            badgeEl.style.display = 'none';
+          }
+        }
+
+        friendsList = Array.isArray(friendsRes) ? friendsRes : [];
+        friendRequestsList = Array.isArray(requestsRes) ? requestsRes : [];
+        pendingRequestsList = Array.isArray(pendingRes) ? pendingRes : (pendingRes && Array.isArray(pendingRes.data) ? pendingRes.data : []);
+
+        const bFriends = document.getElementById('subtabCountFriends');
+        const bRequests = document.getElementById('subtabCountRequests');
+        const bPending = document.getElementById('subtabCountPending');
+        if (bFriends) bFriends.innerText = friendsList.length;
+        if (bRequests) bRequests.innerText = friendRequestsList.length;
+        if (bPending) bPending.innerText = pendingRequestsList.length;
+
+        renderFriendRequests();
+
+        if (currentSocialSubtab === 'friends') {
+          renderFriendsList();
+        } else if (currentSocialSubtab === 'requests') {
+          renderRequestsSubtabList();
+        } else if (currentSocialSubtab === 'pending') {
+          renderPendingList();
+        }
+
+        if (activeChatFriend) {
+          const fresh = friendsList.find(f => f.id === activeChatFriend.id);
+          if (fresh) {
+            activeChatFriend = fresh;
+            renderChatHeader(fresh);
+          }
+        }
+
+        if (isManual) {
+          showToast("Friends & social list refreshed!");
+        }
+      } catch (err) {
+        console.warn("loadSocialData error:", err);
+      }
+    }
+
+    function setSocialSubtab(tab) {
+      currentSocialSubtab = tab;
+      const btnFriends = document.getElementById('subtabBtnFriends');
+      const btnRequests = document.getElementById('subtabBtnRequests');
+      const btnPending = document.getElementById('subtabBtnPending');
+      const searchContainer = document.getElementById('friendSearchContainer');
+      const presenceHdr = document.getElementById('friendsPresenceHdr');
+
+      if (btnFriends) btnFriends.classList.toggle('active', tab === 'friends');
+      if (btnRequests) btnRequests.classList.toggle('active', tab === 'requests');
+      if (btnPending) btnPending.classList.toggle('active', tab === 'pending');
+
+      if (searchContainer) searchContainer.style.display = (tab === 'friends') ? 'block' : 'none';
+      if (presenceHdr) presenceHdr.style.display = (tab === 'friends') ? 'flex' : 'none';
+
+      if (tab === 'friends') {
+        renderFriendsList();
+      } else if (tab === 'requests') {
+        renderRequestsSubtabList();
+      } else if (tab === 'pending') {
+        renderPendingList();
+      }
+    }
+
+    function renderRequestsSubtabList() {
+      const container = document.getElementById('friendsListContainer');
+      if (!container) return;
+
+      const badge = document.getElementById('subtabCountRequests');
+      if (badge) badge.innerText = friendRequestsList.length;
+
+      if (friendRequestsList.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:36px 14px; color:var(--muted); font-size:13px;">
+            <div style="font-size:32px; margin-bottom:8px;">📬</div>
+            <div>No incoming friend requests.</div>
+            <div style="font-size:11.5px; margin-top:4px; color:var(--muted);">When other players add you, their requests will appear here.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = friendRequestsList.map(req => {
+        const avatarHtml = (req.avatar_data && req.avatar_data.startsWith('data:image'))
+          ? `<img src="${req.avatar_data}" alt="avatar">`
+          : escapeHtml((req.username || '?').charAt(0).toUpperCase());
+        const tagHtml = req.tag ? `<span class="badge badge-dev" style="padding:1px 5px; font-size:9.5px;">🔨 ${escapeHtml(req.tag)}</span>` : '';
+        const timeAgo = formatTimeAgo(req.created_at);
+
+        return `
+          <div class="friend-card" style="cursor:default;">
+            <div class="friend-row-main">
+              <div class="friend-avatar-wrap">
+                <div class="friend-avatar">${avatarHtml}</div>
+              </div>
+              <div class="friend-info">
+                <div class="friend-name">
+                  <span>@${escapeHtml(req.username)}</span>
+                  ${tagHtml}
+                </div>
+                <div style="font-size:11px; color:var(--muted);">${timeAgo}</div>
+              </div>
+            </div>
+            <div class="friend-actions-row">
+              <button class="btn btn-primary btn-sm" style="padding:3px 9px; font-size:11px;" onclick="handleAcceptFriend('${req.sender_id}', '${escapeHtml(req.username)}')">✓ Accept</button>
+              <button class="btn btn-secondary btn-sm" style="padding:3px 9px; font-size:11px;" onclick="handleRejectFriend('${req.sender_id}', '${escapeHtml(req.username)}')">✕ Decline</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPendingList() {
+      const container = document.getElementById('friendsListContainer');
+      if (!container) return;
+
+      const badge = document.getElementById('subtabCountPending');
+      if (badge) badge.innerText = pendingRequestsList.length;
+
+      if (pendingRequestsList.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:36px 14px; color:var(--muted); font-size:13px;">
+            <div style="font-size:32px; margin-bottom:8px;">⏳</div>
+            <div>No pending outgoing requests.</div>
+            <div style="font-size:11.5px; margin-top:4px; color:var(--muted);">Requests you send will appear here until accepted.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pendingRequestsList.map(req => {
+        const avatarHtml = (req.avatar_data && req.avatar_data.startsWith('data:image'))
+          ? `<img src="${req.avatar_data}" alt="avatar">`
+          : escapeHtml((req.username || '?').charAt(0).toUpperCase());
+        const tagHtml = req.tag ? `<span class="badge badge-dev" style="padding:1px 5px; font-size:9.5px;">🔨 ${escapeHtml(req.tag)}</span>` : '';
+        const timeAgo = formatTimeAgo(req.created_at);
+
+        return `
+          <div class="friend-card" style="cursor:default;">
+            <div class="friend-row-main">
+              <div class="friend-avatar-wrap">
+                <div class="friend-avatar">${avatarHtml}</div>
+              </div>
+              <div class="friend-info">
+                <div class="friend-name">
+                  <span>@${escapeHtml(req.username)}</span>
+                  ${tagHtml}
+                </div>
+                <div style="font-size:11px; color:var(--muted);">Pending response... · ${timeAgo}</div>
+              </div>
+            </div>
+            <div class="friend-actions-row">
+              <button class="btn btn-danger btn-sm" style="padding:3px 9px; font-size:11px;" onclick="cancelPendingRequest('${req.id}', '${escapeHtml(req.username)}');" title="Cancel friend request">
+                ✕ Cancel
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderFriendRequests() {
+      const wrapper = document.getElementById('socialReqsWrapper');
+      const listEl = document.getElementById('socialReqsList');
+      const badge = document.getElementById('reqsCountBadge');
+      if (!wrapper || !listEl) return;
+
+      if (friendRequestsList.length === 0) {
+        wrapper.style.display = 'none';
+        return;
+      }
+
+      wrapper.style.display = 'block';
+      if (badge) badge.innerText = friendRequestsList.length;
+
+      listEl.innerHTML = friendRequestsList.map(req => {
+        const avatarHtml = (req.avatar_data && req.avatar_data.startsWith('data:image'))
+          ? `<img src="${req.avatar_data}" alt="avatar">`
+          : escapeHtml((req.username || '?').charAt(0).toUpperCase());
+        const tagHtml = req.tag ? `<span class="badge badge-dev" style="padding:1px 5px; font-size:10px;">🔨 ${escapeHtml(req.tag)}</span>` : '';
+        const timeAgo = formatTimeAgo(req.created_at);
+
+        return `
+          <div class="req-item">
+            <div class="req-user-info">
+              <div class="friend-avatar">${avatarHtml}</div>
+              <div>
+                <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; align-items:center; gap:6px;">
+                  <span>@${escapeHtml(req.username)}</span>
+                  ${tagHtml}
+                </div>
+                <div style="font-size:11px; color:var(--muted);">${timeAgo}</div>
+              </div>
+            </div>
+            <div class="req-actions">
+              <button class="btn btn-primary btn-sm" onclick="handleAcceptFriend('${req.sender_id}', '${escapeHtml(req.username)}')">✓ Accept</button>
+              <button class="btn btn-secondary btn-sm" onclick="handleRejectFriend('${req.sender_id}', '${escapeHtml(req.username)}')">✕ Decline</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderFriendsList() {
+      const container = document.getElementById('friendsListContainer');
+      const countOnline = document.getElementById('friendsCountOnline');
+      const countTotal = document.getElementById('friendsCountTotal');
+      const search = (document.getElementById('friendSearchInput')?.value || '').trim().toLowerCase();
+      if (!container) return;
+
+      const onlineCount = friendsList.filter(f => f.is_online).length;
+      if (countOnline) countOnline.innerText = onlineCount;
+      if (countTotal) countTotal.innerText = friendsList.length;
+
+      let filtered = friendsList;
+      if (search) {
+        filtered = filtered.filter(f => 
+          (f.username || '').toLowerCase().includes(search) || 
+          (f.current_game || '').toLowerCase().includes(search) ||
+          (f.tag || '').toLowerCase().includes(search)
+        );
+      }
+
+      if (friendsList.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:36px 14px; color:var(--muted); font-size:13px;">
+            <div style="font-size:32px; margin-bottom:8px;">👥</div>
+            <div>No friends added yet.</div>
+            <div style="font-size:11.5px; margin-top:4px; color:var(--accent);">Enter a username above to send a request!</div>
+          </div>
+        `;
+        return;
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:28px 14px; color:var(--muted); font-size:12.5px;">
+            No friends match "${escapeHtml(search)}".
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(f => {
+        const isSelected = activeChatFriend && activeChatFriend.id === f.id;
+        const avatarHtml = (f.avatar_data && f.avatar_data.startsWith('data:image'))
+          ? `<img src="${f.avatar_data}" alt="avatar">`
+          : escapeHtml((f.username || '?').charAt(0).toUpperCase());
+
+        let statusDotClass = 'offline';
+        let statusTextHtml = '⚪ Offline';
+
+        if (f.is_in_game) {
+          statusDotClass = 'in-game';
+          statusTextHtml = `<span class="friend-status-text in-game">🎮 ${escapeHtml(f.current_game || 'Roblox')}</span>`;
+        } else if (f.is_online) {
+          statusDotClass = 'online';
+          statusTextHtml = `<span class="friend-status-text online">🟢 Online</span>`;
+        } else {
+          statusTextHtml = `<span class="friend-status-text offline">Offline · ${formatLastSeen(f.last_seen)}</span>`;
+        }
+
+        const tagHtml = f.tag ? `<span class="badge badge-dev" style="padding:1px 5px; font-size:9.5px;">${escapeHtml(f.tag)}</span>` : '';
+        const unreadHtml = f.unread_dms > 0 ? `<span class="badge-msg">${f.unread_dms}</span>` : '';
+
+        // Join Server Button if in-game
+        const joinServerBtnHtml = (f.is_in_game && f.current_place_id) ? `
+          <button class="btn-join-server" onclick="joinRobloxServer('${f.current_place_id}', '${f.current_job_id || ''}', '${escapeHtml(f.username)}', event)" title="Launch Roblox and join friend's server">
+            🚀 Join Server
+          </button>
+        ` : '';
+
+        return `
+          <div class="friend-card ${isSelected ? 'active' : ''}" onclick="selectChatFriend('${f.id}')">
+            <div class="friend-row-main">
+              <div class="friend-avatar-wrap">
+                <div class="friend-avatar">${avatarHtml}</div>
+                <div class="status-dot ${statusDotClass}"></div>
+              </div>
+              <div class="friend-info">
+                <div class="friend-name">
+                  <span>@${escapeHtml(f.username)}</span>
+                  ${tagHtml}
+                  ${unreadHtml}
+                </div>
+                <div>${statusTextHtml}</div>
+              </div>
+            </div>
+            <div class="friend-actions-row">
+              ${joinServerBtnHtml}
+              <button class="btn btn-secondary btn-sm" style="padding:3px 9px; font-size:11px;" onclick="selectChatFriend('${f.id}'); event.stopPropagation();">
+                💬 Chat
+              </button>
+              <button class="btn btn-danger btn-sm" style="padding:3px 8px; font-size:11px;" onclick="unfriendUser('${f.id}', '${escapeHtml(f.username)}', event);" title="Unfriend @${escapeHtml(f.username)}">
+                ✕ Unfriend
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectChatFriend(friendId) {
+      const friend = friendsList.find(f => f.id === friendId);
+      if (!friend) return;
+      activeChatFriend = friend;
+      renderFriendsList();
+
+      const emptyState = document.getElementById('chatEmptyState');
+      const activeState = document.getElementById('chatActiveState');
+      if (emptyState) emptyState.style.display = 'none';
+      if (activeState) activeState.style.display = 'flex';
+
+      renderChatHeader(friend);
+      loadChatMessages(friend.id);
+
+      setTimeout(() => {
+        const input = document.getElementById('chatMessageInput');
+        if (input) input.focus();
+      }, 100);
+    }
+
+    function renderChatHeader(friend) {
+      const avatarEl = document.getElementById('activeChatAvatar');
+      const usernameEl = document.getElementById('activeChatUsername');
+      const tagEl = document.getElementById('activeChatTag');
+      const statusDot = document.getElementById('activeChatStatusDot');
+      const statusText = document.getElementById('activeChatStatusText');
+      const actionsEl = document.getElementById('activeChatActions');
+
+      if (avatarEl) {
+        avatarEl.innerHTML = (friend.avatar_data && friend.avatar_data.startsWith('data:image'))
+          ? `<img src="${friend.avatar_data}" alt="avatar">`
+          : escapeHtml((friend.username || '?').charAt(0).toUpperCase());
+      }
+      if (usernameEl) usernameEl.innerText = `@${friend.username}`;
+      if (tagEl) {
+        tagEl.innerHTML = friend.tag ? `<span class="badge badge-dev" style="padding:1px 6px; font-size:10px;">🔨 ${escapeHtml(friend.tag)}</span>` : '';
+      }
+
+      if (statusDot) {
+        statusDot.className = 'status-dot ' + (friend.is_in_game ? 'in-game' : (friend.is_online ? 'online' : 'offline'));
+      }
+      if (statusText) {
+        if (friend.is_in_game) {
+          statusText.innerHTML = `<span style="color:#67e8f9; font-weight:600;">🎮 Playing ${escapeHtml(friend.current_game || 'Roblox')}</span>`;
+        } else if (friend.is_online) {
+          statusText.innerHTML = `<span style="color:#86efac; font-weight:500;">🟢 Online</span>`;
+        } else {
+          statusText.innerText = `Offline · ${formatLastSeen(friend.last_seen)}`;
+        }
+      }
+
+      if (actionsEl) {
+        let html = '';
+        if (friend.is_in_game && friend.current_place_id) {
+          html += `
+            <button class="btn-join-server" onclick="joinRobloxServer('${friend.current_place_id}', '${friend.current_job_id || ''}', '${escapeHtml(friend.username)}', event)">
+              🚀 Join Server
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="copyJoinLink('${friend.current_place_id}', '${friend.current_job_id || ''}', event)" title="Copy direct Roblox join URL">
+              📋 Link
+            </button>
+          `;
+        }
+        html += `<button class="btn btn-secondary btn-sm" onclick="loadChatMessages('${friend.id}')" title="Refresh messages">🔄</button>`;
+        actionsEl.innerHTML = html;
+      }
+    }
+
+    async function loadChatMessages(friendId) {
+      if (!currentUser || !currentUser.id || !friendId) return;
+      try {
+        const res = await callRpc("speg_get_messages", {
+          p_user_id: currentUser.id,
+          p_friend_id: friendId,
+          p_limit: 60
+        });
+
+        chatMessagesList = Array.isArray(res) ? res : [];
+        renderChatMessages();
+
+        if (activeChatFriend) {
+          activeChatFriend.unread_dms = 0;
+          const f = friendsList.find(x => x.id === activeChatFriend.id);
+          if (f) f.unread_dms = 0;
+          renderFriendsList();
+        }
+      } catch (err) {
+        console.warn("loadChatMessages error:", err);
+      }
+    }
+
+    function renderChatMessages() {
+      const container = document.getElementById('chatMessagesThread');
+      if (!container) return;
+
+      if (chatMessagesList.length === 0) {
+        container.innerHTML = `
+          <div style="margin:auto; text-align:center; color:var(--muted); font-size:13px; padding:20px;">
+            No messages yet.<br>Send a message to start chatting with @${escapeHtml(activeChatFriend?.username || 'friend')}!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = chatMessagesList.map(msg => {
+        const isMine = msg.sender_id === currentUser.id;
+        const timeStr = formatMsgTime(msg.created_at);
+        return `
+          <div class="chat-msg ${isMine ? 'mine' : 'theirs'}">
+            <div class="msg-bubble">${escapeHtml(msg.content)}</div>
+            <div class="msg-time">${timeStr}</div>
+          </div>
+        `;
+      }).join('');
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function handleSendChatMessage(e) {
+      e.preventDefault();
+      if (!currentUser || !currentUser.id || !activeChatFriend) return;
+      const input = document.getElementById('chatMessageInput');
+      const btn = document.getElementById('btnSendChatMessage');
+      const content = (input.value || '').trim();
+      if (!content) return;
+
+      btn.disabled = true;
+      try {
+        const res = await callRpc("speg_send_message", {
+          p_sender_id: currentUser.id,
+          p_receiver_id: activeChatFriend.id,
+          p_content: content
+        });
+
+        if (!res.success) {
+          showToast(res.error || "Failed to send message");
+          return;
+        }
+
+        input.value = '';
+        chatMessagesList.push({
+          id: res.message_id || String(Date.now()),
+          sender_id: currentUser.id,
+          receiver_id: activeChatFriend.id,
+          content: content,
+          created_at: new Date().toISOString()
+        });
+        renderChatMessages();
+
+        loadChatMessages(activeChatFriend.id);
+      } catch (err) {
+        showToast(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        input.focus();
+      }
+    }
+
+    async function handleAddFriend(e) {
+      e.preventDefault();
+      if (!currentUser || !currentUser.id) return;
+      const input = document.getElementById('addFriendInput');
+      const btn = document.getElementById('btnAddFriendSubmit');
+      const username = (input.value || '').trim();
+      if (!username) return;
+
+      btn.disabled = true;
+      btn.innerText = "Sending...";
+      try {
+        const res = await callRpc("speg_add_friend", {
+          p_user_id: currentUser.id,
+          p_friend_username: username
+        });
+
+        if (!res.success) {
+          alert(`Could not send request: ${res.error || 'Unknown error'}`);
+          return;
+        }
+
+        showToast(`Friend request sent to @${username}!`);
+        input.value = '';
+        loadSocialData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "+ Send Request";
+      }
+    }
+
+    async function handleAcceptFriend(requesterId, username) {
+      if (!currentUser || !currentUser.id) return;
+      try {
+        const res = await callRpc("speg_accept_friend", {
+          p_user_id: currentUser.id,
+          p_requester_id: requesterId
+        });
+
+        if (!res.success) {
+          alert(res.error || "Failed to accept request");
+          return;
+        }
+
+        showToast(`Friend request from @${username} accepted!`);
+        loadSocialData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function handleRejectFriend(requesterId, username) {
+      if (!currentUser || !currentUser.id) return;
+      try {
+        const res = await callRpc("speg_reject_friend", {
+          p_user_id: currentUser.id,
+          p_requester_id: requesterId
+        });
+
+        if (!res.success) {
+          alert(res.error || "Failed to decline request");
+          return;
+        }
+
+        showToast(`Friend request from @${username} declined.`);
+        loadSocialData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function unfriendUser(friendId, friendUsername, event) {
+      if (event) event.stopPropagation();
+      if (!currentUser || !currentUser.id) return;
+      if (!confirm(`Are you sure you want to unfriend @${friendUsername}?`)) return;
+      try {
+        let res = await callRpc("speg_unfriend", {
+          p_user_id: currentUser.id,
+          p_friend_id: friendId
+        });
+
+        if (!res || res.success === false) {
+          try {
+            await fetch(`${EMBEDDED_URL}/rest/v1/speg_friends?user_id=eq.${currentUser.id}&friend_id=eq.${friendId}`, {
+              method: 'DELETE',
+              headers: {
+                'apikey': EMBEDDED_ANON,
+                'Authorization': `Bearer ${EMBEDDED_ANON}`
+              }
+            });
+            await fetch(`${EMBEDDED_URL}/rest/v1/speg_friends?user_id=eq.${friendId}&friend_id=eq.${currentUser.id}`, {
+              method: 'DELETE',
+              headers: {
+                'apikey': EMBEDDED_ANON,
+                'Authorization': `Bearer ${EMBEDDED_ANON}`
+              }
+            });
+            res = { success: true };
+          } catch (e2) {}
+        }
+
+        if (res && res.success) {
+          showToast(`Unfriended @${friendUsername}.`);
+          if (activeChatFriend && activeChatFriend.id === friendId) {
+            activeChatFriend = null;
+            const emptyState = document.getElementById('chatEmptyState');
+            const activeState = document.getElementById('chatActiveState');
+            if (emptyState) emptyState.style.display = 'flex';
+            if (activeState) activeState.style.display = 'none';
+          }
+          loadSocialData();
+        } else {
+          showToast((res && res.error) || "Failed to unfriend.");
+        }
+      } catch (err) {
+        showToast(`Error: ${err.message}`);
+      }
+    }
+
+    async function cancelPendingRequest(targetId, targetUsername) {
+      if (!currentUser || !currentUser.id) return;
+      if (!confirm(`Cancel outgoing friend request to @${targetUsername}?`)) return;
+      try {
+        let res = await callRpc("speg_reject_friend", {
+          p_user_id: currentUser.id,
+          p_requester_id: targetId
+        });
+        if (!res || res.success === false) {
+          try {
+            await fetch(`${EMBEDDED_URL}/rest/v1/speg_friends?user_id=eq.${currentUser.id}&friend_id=eq.${targetId}&status=eq.pending`, {
+              method: 'DELETE',
+              headers: {
+                'apikey': EMBEDDED_ANON,
+                'Authorization': `Bearer ${EMBEDDED_ANON}`
+              }
+            });
+            res = { success: true };
+          } catch (e2) {}
+        }
+
+        if (res && res.success) {
+          showToast(`Cancelled friend request to @${targetUsername}.`);
+          loadSocialData();
+        } else {
+          showToast((res && res.error) || "Failed to cancel request.");
+        }
+      } catch (err) {
+        showToast(`Error: ${err.message}`);
+      }
+    }
+
+    function joinRobloxServer(placeId, jobId, friendName, event) {
+      if (event) event.stopPropagation();
+      if (!placeId) {
+        alert("No active Roblox Place ID found for this friend.");
+        return;
+      }
+
+      let robloxUrl = `roblox://placeId=${encodeURIComponent(placeId)}`;
+      if (jobId && jobId.trim() !== '') {
+        robloxUrl += `&gameInstanceId=${encodeURIComponent(jobId.trim())}`;
+      }
+
+      window.location.href = robloxUrl;
+      showToast(`🚀 Launching Roblox to join @${friendName || 'friend'}...`);
+    }
+
+    function copyJoinLink(placeId, jobId, event) {
+      if (event) event.stopPropagation();
+      if (!placeId) return;
+
+      let link = `https://www.roblox.com/games/start?placeId=${encodeURIComponent(placeId)}`;
+      if (jobId && jobId.trim() !== '') {
+        link += `&gameInstanceId=${encodeURIComponent(jobId.trim())}`;
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(() => {
+          showToast("Roblox join link copied to clipboard!");
+        }).catch(() => {
+          prompt("Roblox Join Link:", link);
+        });
+      } else {
+        prompt("Roblox Join Link:", link);
+      }
+    }
+
+    function showToast(message) {
+      const existing = document.querySelector('.speg-toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'speg-toast';
+      toast.innerHTML = `<span>💬</span><span>${escapeHtml(message)}</span>`;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatMsgTime(isoStr) {
+      if (!isoStr) return '';
+      try {
+        const d = new Date(isoStr);
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function formatTimeAgo(isoStr) {
+      if (!isoStr) return '';
+      try {
+        const diff = (Date.now() - new Date(isoStr).getTime()) / 1000;
+        if (diff < 60) return 'Just now';
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+        return `${Math.floor(diff / 86400)}d ago`;
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function formatLastSeen(isoStr) {
+      if (!isoStr) return 'a while ago';
+      try {
+        const diff = (Date.now() - new Date(isoStr).getTime()) / 1000;
+        if (diff < 90) return 'Just now';
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+        return `${Math.floor(diff / 86400)}d ago`;
+      } catch (e) {
+        return 'offline';
+      }
+    }
+
+    function startSocialPolling() {
+      if (socialPollingTimer) clearInterval(socialPollingTimer);
+      socialPollingTimer = setInterval(() => {
+        if (currentUser && document.getElementById('view-account')?.classList.contains('active')) {
+          loadSocialData();
+          if (activeChatFriend) {
+            loadChatMessages(activeChatFriend.id);
+          }
+        }
+      }, 6000);
+    }
+
+    // ========================================================================
+    // ADMIN DASHBOARD LOGIC
+    // ========================================================================
+    function setAdminTab(tab) {
+      const btnKeys = document.getElementById('admTabBtnKeys');
+      const btnUsers = document.getElementById('admTabBtnUsers');
+      const viewKeys = document.getElementById('admViewKeys');
+      const viewUsers = document.getElementById('admViewUsers');
+
+      if (tab === 'keys') {
+        btnKeys.classList.add('active');
+        btnUsers.classList.remove('active');
+        viewKeys.style.display = 'block';
+        viewUsers.style.display = 'none';
+      } else {
+        btnKeys.classList.remove('active');
+        btnUsers.classList.add('active');
+        viewKeys.style.display = 'none';
+        viewUsers.style.display = 'block';
+      }
+    }
+
+    async function refreshAdminData() {
+      try {
+        adminKeysList = await adminRest("speg_keys?select=*&order=created_at.desc");
+        adminUsersList = await adminRest("speg_users?select=*&order=created_at.desc");
+
+        document.getElementById('metricTotalUsers').innerText = adminUsersList.length;
+        document.getElementById('metricTotalKeys').innerText = adminKeysList.length;
+        document.getElementById('metricActiveKeys').innerText = adminKeysList.filter(k => k.status === 'active').length;
+        document.getElementById('metricUnclaimedKeys').innerText = adminKeysList.filter(k => k.status === 'unclaimed').length;
+
+        renderAdminKeys();
+        renderAdminUsers();
+      } catch (err) {
+        console.warn("Admin fetch error:", err.message);
+      }
+    }
+
+    function renderAdminKeys() {
+      const tbody = document.getElementById('adminKeysTbody');
+      const query = (document.getElementById('adminKeySearch').value || '').trim().toLowerCase();
+      const statusFilter = document.getElementById('adminKeyFilter').value;
+
+      let filtered = adminKeysList.filter(k => {
+        if (statusFilter !== 'all' && k.status !== statusFilter) return false;
+        if (query) {
+          const matchCode = (k.key_code || '').toLowerCase().includes(query);
+          const matchTag = (k.tag || '').toLowerCase().includes(query);
+          const matchNotes = (k.notes || '').toLowerCase().includes(query);
+          return matchCode || matchTag || matchNotes;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--muted); padding:28px;">No matching keys found</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(k => `
+        <tr>
+          <td class="mono" style="font-weight:700; color:#fff;">${k.key_code}</td>
+          <td>${k.tier}</td>
+          <td>${k.tag ? `<span class="badge badge-dev">🔨 ${k.tag}</span>` : '<span style="color:var(--muted);">—</span>'}</td>
+          <td><span class="badge badge-${k.status}">${k.status}</span></td>
+          <td class="mono" style="font-size:11px;">${k.hwid || '—'}</td>
+          <td>${k.expires_at ? new Date(k.expires_at).toLocaleDateString() : 'Lifetime'}</td>
+          <td style="color:var(--muted); font-size:12px;">${k.notes || '—'}</td>
+          <td>
+            <div style="display:flex; gap:6px;">
+              ${k.hwid ? `<button class="btn btn-secondary btn-sm" onclick="adminResetHwid('${k.id}')">🔄 Reset HWID</button>` : ''}
+              ${k.status !== 'banned' ? `<button class="btn btn-danger btn-sm" onclick="adminToggleBanKey('${k.id}', true)">Ban</button>` : `<button class="btn btn-secondary btn-sm" onclick="adminToggleBanKey('${k.id}', false)">Unban</button>`}
+              <button class="btn btn-danger btn-sm" onclick="adminDeleteKey('${k.id}', '${k.key_code}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAdminUsers() {
+      const tbody = document.getElementById('adminUsersTbody');
+      const query = (document.getElementById('adminUserSearch').value || '').trim().toLowerCase();
+
+      let filtered = adminUsersList.filter(u => {
+        if (!query) return true;
+        const matchEmail = (u.email || '').toLowerCase().includes(query);
+        const matchUname = (u.username || '').toLowerCase().includes(query);
+        const matchKey = (u.active_key_code || '').toLowerCase().includes(query);
+        return matchEmail || matchUname || matchKey;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--muted); padding:28px;">No matching users found</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        const isDev = u.tag === 'Developer';
+        const displayUname = u.username || 'user';
+        return `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="font-weight:700; color:#fff;">${isDev ? '🔨 ' : ''}@${displayUname}</div>
+              </div>
+              <div style="font-size:11px; color:var(--muted);">${u.email}</div>
+            </td>
+            <td class="mono">${u.active_key_code ? `<span class="badge badge-active">${u.active_key_code}</span>` : '<span style="color:var(--muted);">None</span>'}</td>
+            <td class="mono" style="font-size:11px;">${u.id.substring(0, 8)}...</td>
+            <td class="mono" style="font-size:11px;">${u.hwid ? u.hwid.substring(0, 16) + '...' : '—'}</td>
+            <td><span class="badge ${u.is_banned ? 'badge-banned' : 'badge-active'}">${u.is_banned ? 'Banned' : 'Active'}</span></td>
+            <td>${new Date(u.created_at).toLocaleDateString()}</td>
+            <td>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-sm ${u.is_banned ? 'btn-secondary' : 'btn-danger'}" onclick="adminToggleBanUser('${u.id}', '${displayUname}', ${!u.is_banned})">
+                  ${u.is_banned ? 'Unban' : 'Ban User'}
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="adminDeleteUser('${u.id}', '${displayUname}')">
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function adminResetHwid(keyId) {
+      if (!confirm("Are you sure you want to reset the bound hardware ID for this key? The user will be permitted to bind a new PC.")) return;
+      try {
+        await adminRest(`speg_keys?id=eq.${keyId}`, {
+          method: "PATCH",
+          body: JSON.stringify({ hwid: null })
+        });
+        alert("HWID reset successfully.");
+        refreshAdminData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function adminToggleBanKey(keyId, ban) {
+      const action = ban ? "ban" : "unban";
+      if (!confirm(`Are you sure you want to ${action} this license key?`)) return;
+      try {
+        await adminRest(`speg_keys?id=eq.${keyId}`, {
+          method: "PATCH",
+          body: JSON.stringify({ status: ban ? 'banned' : 'active' })
+        });
+        alert(`Key has been ${ban ? 'banned' : 'unbanned'}.`);
+        refreshAdminData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function adminDeleteKey(keyId, keyCode) {
+      if (!confirm(`Are you sure you want to permanently delete license key "${keyCode}" from the database?\n\nThis action cannot be undone.`)) return;
+      try {
+        await adminRest(`speg_keys?id=eq.${keyId}`, {
+          method: "DELETE"
+        });
+        alert(`License key "${keyCode}" has been deleted.`);
+        refreshAdminData();
+      } catch (err) {
+        alert(`Delete failed: ${err.message}`);
+      }
+    }
+
+    async function adminToggleBanUser(userId, username, ban) {
+      const action = ban ? "ban" : "unban";
+      if (!confirm(`Are you sure you want to ${action} user "@${username}"?`)) return;
+      try {
+        await adminRest(`speg_users?id=eq.${userId}`, {
+          method: "PATCH",
+          body: JSON.stringify({ is_banned: ban })
+        });
+        alert(`User "@${username}" has been ${ban ? 'banned' : 'unbanned'}.`);
+        refreshAdminData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function adminDeleteUser(userId, username) {
+      if (!confirm(`Are you sure you want to permanently delete user account "@${username}" and all associated data from the database?\n\nThis action cannot be undone.`)) return;
+      try {
+        await adminRest(`speg_users?id=eq.${userId}`, {
+          method: "DELETE"
+        });
+        alert(`User account "@${username}" has been permanently deleted.`);
+        refreshAdminData();
+      } catch (err) {
+        alert(`Delete failed: ${err.message}`);
+      }
+    }
+
+    function openKeyGenModal() {
+      document.getElementById('modalKeyGen').classList.add('open');
+    }
+    function closeKeyGenModal() {
+      document.getElementById('modalKeyGen').classList.remove('open');
+    }
+
+    async function handleBatchGenerate(e) {
+      e.preventDefault();
+      const tier = document.getElementById('modalGenTier').value;
+      const dur = document.getElementById('modalGenDuration').value;
+      const durationDays = dur === 'lifetime' ? null : parseInt(dur, 10);
+      const tag = document.getElementById('modalGenTag').value.trim();
+      const count = parseInt(document.getElementById('modalGenCount').value, 10);
+      const notes = document.getElementById('modalGenNote').value.trim();
+      const btn = document.getElementById('btnModalGenSubmit');
+
+      btn.disabled = true;
+      btn.innerText = "Generating...";
+
+      try {
+        const rows = [];
+        const codes = [];
+        for (let i = 0; i < count; i++) {
+          const randHex = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+          const code = `SPEG-${randHex()}-${randHex()}-${randHex()}-${randHex()}`;
+          rows.push({
+            key_code: code,
+            tier: tier,
+            duration_days: durationDays,
+            status: "unclaimed",
+            notes: notes,
+            tag: tag
+          });
+          codes.push(code);
+        }
+
+        await adminRest("speg_keys", {
+          method: "POST",
+          body: JSON.stringify(rows)
+        });
+
+        document.getElementById('modalGenOutputWrap').style.display = 'block';
+        document.getElementById('modalGenOutput').value = codes.join('\n');
+        alert(`Successfully generated ${count} key(s)!`);
+        refreshAdminData();
+      } catch (err) {
+        alert(`Generation error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Generate & Insert into DB";
+      }
+    }
+
+    function copyGenKeys() {
+      const area = document.getElementById('modalGenOutput');
+      navigator.clipboard.writeText(area.value);
+      alert("Keys copied to clipboard!");
+    }
+
+    // ========================================================================
+    // Interactive Starfield Algorithm (Port of Speg Studio's StarfieldVisualizer)
+    // - Drifting & twinkling stars
+    // - 3 closest stars within reach connect to cursor with dynamic lines
+    // - Handover fade-in and fade-out as mouse moves
+    // ========================================================================
+    (function initConstellation() {
+      const canvas = document.getElementById('starfieldCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const LINKS = 3;
+      const REACH = 260.0;
+      const DENSITY = 1 / 6500.0;
+      const MAX_STARS = 180;
+
+      let stars = [];
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+
+      let mouse = { x: -1000, y: -1000, inside: false };
+
+      function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        const target = Math.min(MAX_STARS, Math.floor(width * height * DENSITY));
+        while (stars.length < target) {
+          const speed = Math.random() * 10 + 4;
+          const ang = Math.random() * Math.PI * 2;
+          stars.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: Math.cos(ang) * speed,
+            vy: Math.sin(ang) * speed,
+            radius: [0.9, 1.1, 1.3, 1.6, 2.0][Math.floor(Math.random() * 5)],
+            phase: Math.random() * Math.PI * 2,
+            twinkleSpeed: Math.random() * 1.2 + 0.6,
+            link: 0.0
+          });
+        }
+        while (stars.length > target) {
+          stars.pop();
+        }
+      }
+
+      window.addEventListener('resize', resize);
+      window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        mouse.inside = true;
+      });
+      window.addEventListener('mouseleave', () => {
+        mouse.inside = false;
+      });
+
+      resize();
+
+      let lastTime = performance.now();
+      let t = 0;
+
+      function render(now) {
+        const dt = Math.min((now - lastTime) / 1000.0, 0.1);
+        lastTime = now;
+        t += dt;
+
+        ctx.clearRect(0, 0, width, height);
+
+        // Find LINKS nearest stars within reach of cursor
+        const targets = new Set();
+        if (mouse.inside) {
+          const reach2 = REACH * REACH;
+          const candidates = [];
+          for (let i = 0; i < stars.length; i++) {
+            const s = stars[i];
+            const d2 = (s.x - mouse.x) ** 2 + (s.y - mouse.y) ** 2;
+            if (d2 < reach2) {
+              candidates.push({ dist2: d2, index: i });
+            }
+          }
+          candidates.sort((a, b) => a.dist2 - b.dist2);
+          for (let i = 0; i < Math.min(LINKS, candidates.length); i++) {
+            targets.add(candidates[i].index);
+          }
+        }
+
+        const fade = Math.min(1.0, dt * 9.0);
+        const margin = 6.0;
+
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+
+          // Drift + wrap around edges
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+          if (s.x < -margin) s.x += width + 2 * margin;
+          else if (s.x > width + margin) s.x -= width + 2 * margin;
+          if (s.y < -margin) s.y += height + 2 * margin;
+          else if (s.y > height + margin) s.y -= height + 2 * margin;
+
+          // Ease link strength towards 1 for targets, 0 for rest
+          const goal = targets.has(i) ? 1.0 : 0.0;
+          s.link += (goal - s.link) * fade;
+          if (s.link < 0.02 && goal === 0.0) s.link = 0.0;
+
+          // Draw connection line
+          if (s.link > 0.0 && mouse.inside) {
+            const dist = Math.hypot(s.x - mouse.x, s.y - mouse.y);
+            const closeness = Math.max(0.0, 1.0 - dist / REACH) ** 0.5;
+            const strength = s.link * (0.35 + 0.65 * closeness);
+
+            ctx.beginPath();
+            ctx.moveTo(s.x, s.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.strokeStyle = `rgba(139, 92, 246, ${strength * 0.75})`;
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+          }
+
+          // Twinkle calculation
+          const twinkle = 0.55 + 0.45 * Math.sin(t * s.twinkleSpeed + s.phase);
+          const r = s.radius * (1.0 + 0.9 * s.link);
+
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+
+          if (s.link > 0.0) {
+            // Glow towards purple accent when linked
+            ctx.fillStyle = `rgba(196, 181, 253, ${Math.min(1.0, 0.4 + s.link * 0.6)})`;
+          } else {
+            ctx.fillStyle = `rgba(255, 255, 255, ${twinkle * 0.7})`;
+          }
+          ctx.fill();
+        }
+
+        requestAnimationFrame(render);
+      }
+
+      requestAnimationFrame(render);
+    })();
+
+    // ========================================================================
+    // Interactive 3D Scroll-Scaling for Desktop Showcase Preview
+    // Gets bigger the further down you scroll towards it, hits peak scale (1.04)
+    // when centered, and gracefully shrinks as you scroll past it or back up.
+    // ========================================================================
+    function updateShowcaseScroll() {
+      const frame = document.getElementById('showcaseFrame');
+      if (!frame) return;
+
+      const rect = frame.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const elementCenter = rect.top + rect.height / 2;
+      const screenCenter = vh / 2;
+
+      // Distance from element center to screen center
+      const dist = elementCenter - screenCenter;
+      const range = vh * 0.82; // Active transition zone
+      const norm = Math.max(-1.4, Math.min(1.4, dist / range));
+      const absNorm = Math.min(1.0, Math.abs(norm));
+
+      // Cosine smooth bell curve: 1 at center, 0 at outer boundaries
+      const centerCloseness = Math.cos(absNorm * (Math.PI / 2));
+
+      // Min scale = 0.82, Max scale = 1.04
+      const minScale = 0.82;
+      const maxScale = 1.04;
+      const scale = minScale + (maxScale - minScale) * Math.pow(centerCloseness, 1.25);
+
+      // 3D Tilt perspective:
+      // When below center (scrolling down towards it): tilts backward (+deg)
+      // When above center (scrolling past it downwards): tilts forward (-deg)
+      const tiltX = Math.max(-9, Math.min(11, norm * 11));
+
+      // Dynamic glow brightness and depth
+      const glowAlpha = 0.16 + 0.34 * centerCloseness;
+      const glowBlur = Math.round(30 + 40 * centerCloseness);
+      const shadowY = Math.round(14 + 18 * centerCloseness);
+
+      frame.style.transform = `perspective(1400px) rotateX(${tiltX.toFixed(2)}deg) scale(${scale.toFixed(3)}) translateZ(0)`;
+      frame.style.boxShadow = `0 ${shadowY}px ${glowBlur}px -15px rgba(139, 92, 246, ${glowAlpha.toFixed(2)}), 0 0 ${Math.round(25 + 30 * centerCloseness)}px rgba(124, 58, 237, ${(glowAlpha * 0.7).toFixed(2)}), inset 0 1px 0 rgba(255, 255, 255, 0.12)`;
+    }
+
+    function initShowcaseScroll() {
+      let ticking = false;
+      function onScroll() {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            updateShowcaseScroll();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      updateShowcaseScroll();
+    }
+
+    // Initialize startup auth state
+    (function init() {
+      try {
+        const savedUserStr = localStorage.getItem(LS_USER);
+        const savedKeyStr = localStorage.getItem(LS_KEY);
+        if (savedUserStr) currentUser = JSON.parse(savedUserStr);
+        if (savedKeyStr) currentKey = JSON.parse(savedKeyStr);
+      } catch (e) {}
+
+      updateAuthState();
+      checkPasswordRecovery();
+      initShowcaseScroll();
+    })();
+  </script>
+</body>
+</html>
