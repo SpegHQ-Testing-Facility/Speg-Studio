@@ -7,7 +7,7 @@
   <p>
     <a href="https://speghq-testing-facility.github.io/Speg-Studio/"><img src="https://img.shields.io/badge/Web%20Portal-GitHub%20Pages-8b5cf6" alt="Web Portal"></a>
     <a href="https://github.com/SpegHQ-Testing-Facility/Speg-Studio/raw/main/SpegStudio.exe"><img src="https://img.shields.io/badge/Download-SpegStudio.exe-success" alt="Download Executable"></a>
-    <img src="https://img.shields.io/badge/Version-1.0.5-blue" alt="Version 1.0.5">
+    <img src="https://img.shields.io/badge/Version-1.0.6-blue" alt="Version 1.0.6">
     <img src="https://img.shields.io/badge/Platform-Windows%2010%2F11-blue" alt="Windows 10/11">
   </p>
 </div>
